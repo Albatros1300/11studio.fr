@@ -1,0 +1,24 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>
+@font-face{font-family:M;font-weight:700;src:url(../site/assets/fonts/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(../site/assets/fonts/montserrat-latin-800-normal.woff2)}
+*{box-sizing:border-box;margin:0}html,body{width:100%;height:100%;overflow:hidden;font-family:M,sans-serif}
+body{position:relative;background:#07264B;color:#fff}
+#bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.sh{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,38,75,.97) 0%,rgba(7,38,75,.82) 34%,rgba(7,38,75,.15) 62%,rgba(7,38,75,.25) 100%)}
+.logo{position:absolute;left:5.2vw;top:5.2vw;background:#fff;border-radius:2.4vw;padding:1.6vw 2.6vw;box-shadow:0 1.5vw 4vw rgba(0,0,0,.3)}
+.logo img{width:24vw;display:block}
+.txt{position:absolute;left:6vw;right:6vw;bottom:7vw}
+.k{font-weight:700;font-size:2.7vw;letter-spacing:.18em;text-transform:uppercase;color:#B9E35A;display:flex;align-items:center;gap:1.6vw;margin-bottom:2.4vw}
+.k:before{content:"";width:6vw;height:.8vw;border-radius:1vw;background:linear-gradient(90deg,#73AF01,#01B7BA)}
+h1{font-weight:800;font-size:8.2vw;line-height:1.04;letter-spacing:-.015em}
+h1 em{font-style:normal;color:#B9E35A}
+.cta{display:inline-flex;align-items:center;gap:1.6vw;margin-top:4.4vw;background:linear-gradient(95deg,#73AF01,#4E8A06);font-weight:800;font-size:3.7vw;padding:2.5vw 4.6vw;border-radius:99vw;box-shadow:0 1.6vw 3.6vw rgba(0,0,0,.35)}
+.ring{position:absolute;right:-18vw;top:-18vw;width:52vw;height:52vw;border-radius:50%;border:5vw solid rgba(185,227,90,.22)}
+.fine{position:absolute;right:6vw;bottom:2.4vw;font-size:1.7vw;font-weight:700;opacity:.6}
+body.story .txt{bottom:26vw} body.story h1{font-size:9.6vw} body.story .logo{top:20vw} body.story .logo img{width:30vw}
+</style></head><body>
+<div id="bg"></div><div class="sh"></div><div class="ring"></div>
+<div class="logo"><img src="../site/assets/img/logo_mark_t.png"></div>
+<div class="txt"><div class="k" id="k"></div><h1 id="h"></h1><div class="cta"><span id="c"></span> →</div></div>
+<script>const q=new URLSearchParams(location.search);bg.style.backgroundImage=`url(../site/assets/img/${q.get('img')})`;bg.style.backgroundPosition=q.get('pos')||'center';k.textContent=q.get('k');h.innerHTML=q.get('h');c.textContent=q.get('c');if(q.get('story'))document.body.classList.add('story')</script>
+</body></html>
