@@ -1,425 +1,243 @@
-/**
- * Cercle Énergie — Plaquette de présentation (PowerPoint 16:9)
- *
- * Usage :
- *   npm install pptxgenjs sharp react react-dom react-icons      (une fois, où vous voulez ; voir NODE_PATH)
- *   node build_plaquette.js
- *
- * Variables d'environnement facultatives :
- *   CE_FONT        police déclarée (défaut : Montserrat). Ex. CE_FONT=Arial pour tester le rendu de secours.
- *   CE_OUT         chemin du fichier de sortie (défaut : Cercle-Energie-Plaquette.pptx à côté du script).
- *   PPTX_SKILL_DIR dossier contenant scripts/apply_theme.js (écrit les couleurs du thème dans le fichier).
- */
-const path = require("path");
-const fs = require("fs");
-const pptxgen = require("pptxgenjs");
-const sharp = require("sharp");
-const React = require("react");
-const ReactDOMServer = require("react-dom/server");
-const lu = require("react-icons/lu");
+// Plaquette Cercle Énergie — version « punch »
+// Usage : NODE_PATH=<node_modules avec pptxgenjs> node build_plaquette.js
+const pptxgen = require('pptxgenjs');
+const path = require('path');
+const IMG = (n) => path.join(__dirname, '..', 'site', 'assets', 'img', n);
+const OV = (n) => path.join(__dirname, 'assets', n);
 
-const IMG = path.resolve(__dirname, "../site/assets/img");
-const OUT = process.env.CE_OUT || path.join(__dirname, "Cercle-Energie-Plaquette.pptx");
-const FONT = process.env.CE_FONT || "Montserrat";
-const SKILL = process.env.PPTX_SKILL_DIR ||
-  "/root/.claude/skills/synced/9284eb0f-0704-4ce8-9ff2-3102e52fd872_b7db30cf-bf43-42d0-96b5-f4d3362fc892/pptx";
+const C = { navy: '0B3566', navyD: '07264B', lime: 'B9E35A', green: '73AF01', greenD: '4E8A06', teal: '01B7BA', blue: '016CB4', white: 'FFFFFF', mist: 'F1F6FB', grey: '40577A', pale: 'CFE0F3' };
+const F = 'Montserrat';
+const W = 13.333, H = 7.5;
 
-const HEX = { navy: "0B3566", green: "73AF01", blue: "016CB4", teal: "01B7BA", tint: "F1F6FB", grey: "40577A", rule: "D5E0EC", white: "FFFFFF" };
-const THEME = {
-  name: "Cercle Énergie",
-  headFontFace: FONT,
-  bodyFontFace: FONT,
-  colors: {
-    dk1: HEX.navy, lt1: HEX.white, dk2: HEX.grey, lt2: HEX.tint,
-    accent1: HEX.green, accent2: HEX.blue, accent3: HEX.teal, accent4: HEX.navy, accent5: HEX.rule, accent6: HEX.grey,
-    hlink: HEX.blue, folHlink: HEX.grey,
-  },
+const p = new pptxgen();
+p.layout = 'LAYOUT_WIDE';
+p.title = 'Cercle Énergie — Plaquette de présentation';
+p.company = 'Cercle Énergie';
+p.theme = { headFontFace: F, bodyFontFace: F };
+
+// ---------- helpers
+const T = (s, text, o) => s.addText(text, Object.assign({ fontFace: F, color: C.white, margin: 0, valign: 'top', fit: 'none' }, o));
+const photo = (s, name, ov) => {
+  s.addImage({ path: IMG(name), x: 0, y: 0, w: W, h: H, sizing: { type: 'cover', w: W, h: H } });
+  if (ov) s.addImage({ path: OV(ov), x: 0, y: 0, w: W, h: H });
 };
+const ring = (s, x, y, d, color, pt, transp) => s.addShape(p.ShapeType.ellipse, { x, y, w: d, h: d, fill: { type: 'none' }, line: { color, width: pt, transparency: transp == null ? 0 : transp } });
+const kicker = (s, text, x, y, color) => {
+  s.addShape(p.ShapeType.roundRect, { x, y: y + 0.09, w: 0.55, h: 0.07, fill: { color: C.green }, line: { type: 'none' }, rectRadius: 0.03 });
+  T(s, text.toUpperCase(), { x: x + 0.72, y, w: 9, h: 0.28, fontSize: 12, bold: true, charSpacing: 4, color: color || C.lime });
+};
+const logoPill = (s, x, y, w) => {
+  const h = w * 0.62;
+  s.addShape(p.ShapeType.roundRect, { x, y, w, h, fill: { color: C.white }, line: { type: 'none' }, rectRadius: 0.14, shadow: { type: 'outer', color: '000000', opacity: 0.25, blur: 12, offset: 4, angle: 90 } });
+  s.addImage({ path: IMG('logo_mark.png'), x: x + w * 0.11, y: y + h * 0.1, w: w * 0.78, h: w * 0.78 * (760 / 1090) });
+};
+const pageNo = (s, n, dark) => T(s, String(n).padStart(2, '0'), { x: W - 1.1, y: H - 0.55, w: 0.6, h: 0.3, fontSize: 11, bold: true, align: 'right', color: dark ? C.navy : C.white, transparency: 30 });
+const dark = (s) => { s.background = { color: C.navyD }; };
 
-const W = 13.333, H = 7.5, M = 0.6, CW = W - 2 * M; // grille : marges 0,6", zone utile 12,13"
-const TOP = 1.85, BOTTOM = 6.55;                     // zone de contenu des pages intérieures
-
-// ---------- helpers images ----------
-/** Recadre une photo 1600x900 : plage horizontale [rx0, rx1] (0..1), ratio cible l/h, biais vertical 0..1. */
-async function crop(name, rx0, rx1, ratio, yBias = 0.5) {
-  const file = path.join(IMG, name + ".jpg");
-  const meta = await sharp(file).metadata();
-  let w = (rx1 - rx0) * meta.width, h = w / ratio, left = rx0 * meta.width;
-  if (h > meta.height) { h = meta.height; const w2 = h * ratio; left += (w - w2) / 2; w = w2; }
-  const top = (meta.height - h) * yBias;
-  const buf = await sharp(file)
-    .extract({ left: Math.round(left), top: Math.round(top), width: Math.floor(w), height: Math.floor(h) })
-    .jpeg({ quality: 88 }).toBuffer();
-  return "image/jpeg;base64," + buf.toString("base64");
+// ---------- 1. Couverture
+{
+  const s = p.addSlide(); photo(s, 'pac-installation.jpg', 'ov_left.png');
+  ring(s, 8.6, -3.2, 7.4, C.lime, 34, 55);
+  logoPill(s, 0.75, 0.6, 2.5);
+  kicker(s, 'Mandataire CEE · Partenaire des professionnels', 0.75, 2.75);
+  T(s, [{ text: 'Vous réalisez les travaux.', options: { breakLine: true } }, { text: 'Nous gérons vos aides CEE.', options: { color: C.lime } }],
+    { x: 0.75, y: 3.2, w: 11.8, h: 2.5, fontSize: 46, bold: true, lineSpacingMultiple: 0.95 });
+  T(s, 'L’accompagnement CEE des artisans, installateurs et entreprises du bâtiment.', { x: 0.75, y: 5.95, w: 7.4, h: 0.8, fontSize: 18, color: C.pale });
 }
-async function icon(name, color) {
-  const Comp = lu[name];
-  if (!Comp) throw new Error("Icône introuvable : " + name);
-  const svg = ReactDOMServer.renderToStaticMarkup(React.createElement(Comp, { size: 256, color: "#" + color }));
-  const buf = await sharp(Buffer.from(svg)).resize(256, 256).png().toBuffer();
-  return "image/png;base64," + buf.toString("base64");
+
+// ---------- 2. Le problème
+{
+  const s = p.addSlide(); photo(s, 'paperasse.jpg', 'ov_right.png');
+  kicker(s, 'Le constat', 6.6, 1.5);
+  T(s, [{ text: 'Les CEE font gagner des chantiers.', options: { breakLine: true } }, { text: 'La paperasse vous les fait payer.', options: { color: C.lime } }],
+    { x: 6.6, y: 1.95, w: 6.1, h: 3.1, fontSize: 38, bold: true, lineSpacingMultiple: 0.98 });
+  T(s, 'Éligibilité, pièces à réunir, exigences du dispositif, suivi : autant de temps que vous ne passez ni sur vos chantiers, ni avec vos clients.',
+    { x: 6.6, y: 5.2, w: 5.9, h: 1.3, fontSize: 16, color: C.pale, lineSpacingMultiple: 1.2 });
+  pageNo(s, 2);
 }
 
-(async () => {
-  const pres = new pptxgen();
-  pres.layout = "LAYOUT_WIDE";
-  pres.title = "Cercle Énergie — Plaquette de présentation";
-  pres.author = "Cercle Énergie";
-  pres.company = "Cercle Énergie";
-  pres.subject = "Plaquette de présentation à destination des professionnels de la rénovation énergétique";
-  pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
-  const C = pres.SchemeColor;
-  const NAVY = C.text1, GREY = C.text2, WHITE = C.background1, TINT = C.background2;
-  const GREEN = C.accent1, BLUE = C.accent2, RULE = C.accent5;
-
-  const LOGO_MARK = path.join(IMG, "logo_mark_t.png"); // 1090 x 760
-  const LOGO_FULL = path.join(IMG, "logo_full_t.png"); // 1356 x 870
-  const logoMark = (h) => ({ w: h * 1090 / 760, h });
-  const logoFull = (w) => ({ w, h: w * 870 / 1356 });
-
-  // ---------- gabarits (layouts) ----------
-  const pageNumber = { x: W - M - 0.8, y: 6.9, w: 0.8, h: 0.3, fontSize: 10, color: GREY, align: "right", valign: "middle", margin: 0 };
-  const sourcePh = { placeholder: { options: { name: "source", type: "body", x: M, y: 6.9, w: 10.5, h: 0.3, fontSize: 10, color: GREY, valign: "middle", margin: 0 }, text: "Note / source" } };
-  const smallLogo = { image: { path: LOGO_MARK, x: W - M - logoMark(0.66).w, y: 0.4, ...logoMark(0.66), altText: "Logo Cercle Énergie" } };
-
-  pres.defineSlideMaster({
-    title: "Couverture", background: { color: WHITE },
-    objects: [
-      { placeholder: { options: { name: "title", type: "title", x: M, y: 3.3, w: 5.3, h: 1.75, fontSize: 28, bold: true, color: NAVY, align: "left", valign: "top", margin: 0 }, text: "Titre" } },
-    ],
+// ---------- 3. La réponse
+{
+  const s = p.addSlide(); dark(s);
+  ring(s, -2.6, 3.6, 7.2, C.teal, 30, 70); ring(s, 9.4, -3.4, 7.6, C.lime, 34, 72);
+  kicker(s, 'Notre réponse', 0.9, 0.95);
+  T(s, [{ text: 'Un seul interlocuteur', options: { breakLine: true } }, { text: 'pour tous vos dossiers CEE.', options: { color: C.lime } }],
+    { x: 0.9, y: 1.4, w: 11.5, h: 2.1, fontSize: 46, bold: true, lineSpacingMultiple: 0.98 });
+  T(s, 'Cercle Énergie est une société spécialisée dans l’accompagnement et la valorisation des Certificats d’Économies d’Énergie. En tant que mandataire, nous travaillons avec des délégataires CEE pour financer vos projets — et nous simplifions toutes vos démarches.',
+    { x: 0.9, y: 3.75, w: 8.2, h: 1.6, fontSize: 17, color: C.pale, lineSpacingMultiple: 1.25 });
+  ['Simplifier', 'Sécuriser', 'Valoriser'].forEach((w, i) => {
+    const x = 0.9 + i * 3.05;
+    s.addShape(p.ShapeType.roundRect, { x, y: 5.75, w: 2.8, h: 0.85, fill: { color: C.green }, line: { type: 'none' }, rectRadius: 0.42 });
+    T(s, w, { x, y: 5.75, w: 2.8, h: 0.85, fontSize: 22, bold: true, align: 'center', valign: 'middle' });
   });
-  pres.defineSlideMaster({
-    title: "Contenu", background: { color: WHITE },
-    objects: [
-      smallLogo,
-      { placeholder: { options: { name: "title", type: "title", x: M, y: 0.45, w: 10.7, h: 1.0, fontSize: 22, bold: true, color: NAVY, align: "left", valign: "top", margin: 0 }, text: "Titre-message" } },
-      sourcePh,
-    ],
-    slideNumber: { ...pageNumber },
+  pageNo(s, 3);
+}
+
+// ---------- 4. La chaîne
+{
+  const s = p.addSlide(); s.background = { color: C.white };
+  kicker(s, 'Notre rôle', 0.9, 0.7, C.greenD);
+  T(s, 'Le lien entre vos chantiers et le financement.', { x: 0.9, y: 1.1, w: 11.8, h: 0.9, fontSize: 31, bold: true, color: C.navy });
+  const cy = 4.15, d = 2.5;
+  const nodes = [
+    { x: 1.3, fill: C.navy, t: 'Installateurs\n& artisans', sub: 'Vous réalisez les travaux' },
+    { x: 5.17, fill: C.white, t: '', sub: 'Votre mandataire CEE', core: true },
+    { x: 9.53, fill: C.green, t: 'Délégataires\nCEE', sub: 'Les acteurs du financement' },
+  ];
+  // liaisons
+  [[3.8, 5.17], [8.17, 9.53]].forEach(([a, b]) => {
+    s.addShape(p.ShapeType.leftRightArrow, { x: a + 0.12, y: cy - 0.28, w: b - a - 0.24, h: 0.56, fill: { color: C.teal }, line: { type: 'none' } });
   });
-  pres.defineSlideMaster({
-    title: "Message", background: { color: TINT },
-    objects: [
-      smallLogo,
-      { placeholder: { options: { name: "title", type: "title", x: 5.8, y: 2.05, w: 6.9, h: 3.2, fontSize: 28, bold: true, color: NAVY, align: "left", valign: "top", margin: 0 }, text: "Message clé" } },
-    ],
-    slideNumber: { ...pageNumber },
-  });
-  pres.defineSlideMaster({
-    title: "Cloture", background: { color: WHITE },
-    objects: [
-      { placeholder: { options: { name: "title", type: "title", x: M, y: 2.3, w: 7.0, h: 1.25, fontSize: 32, bold: true, color: NAVY, align: "left", valign: "top", margin: 0 }, text: "Appel à l'action" } },
-    ],
-    slideNumber: { ...pageNumber, x: M, align: "left" },
-  });
-
-  // ---------- helpers de composition ----------
-  const T = (s, text, o) => s.addText(text, { isTextBox: true, margin: 0, valign: "top", color: GREY, fontSize: 14, ...o });
-  const box = (s, x, y, w, h, color, name) => s.addShape(pres.ShapeType.rect, { x, y, w, h, fill: { color }, objectName: name });
-  const hair = (s, x, y, w) => s.addShape(pres.ShapeType.line, { x, y, w, h: 0, line: { color: RULE, width: 1 } });
-  const num = (s, n, x, y, d, o = {}) => s.addText(String(n), {
-    shape: pres.ShapeType.ellipse, x, y, w: d, h: d, fill: { color: o.fill || NAVY }, color: o.color || WHITE,
-    bold: true, fontSize: o.fontSize || 16, align: "center", valign: "middle", margin: 0, objectName: "Numéro " + n,
-  });
-  const iconCircle = async (s, name, x, y, d, fill, hex) => {
-    s.addShape(pres.ShapeType.ellipse, { x, y, w: d, h: d, fill: { color: fill } });
-    s.addImage({ data: await icon(name, hex), x: x + d * 0.25, y: y + d * 0.25, w: d * 0.5, h: d * 0.5 });
-  };
-  const photo = async (s, name, rx0, rx1, x, y, w, h, alt, yBias) =>
-    s.addImage({ data: await crop(name, rx0, rx1, w / h, yBias), x, y, w, h, altText: alt });
-  const bullets = (items, o = {}) => items.map((t, i) => ({
-    text: t, options: { bullet: { indent: 14 }, breakLine: i < items.length - 1, paraSpaceAfter: o.space ?? 6, ...(o.run || {}) },
-  }));
-  const content = (section, title, source) => {
-    const s = pres.addSlide({ masterName: "Contenu", sectionTitle: section });
-    s.addText(title, { placeholder: "title" });
-    if (source) s.addText(source, { placeholder: "source" });
-    return s;
-  };
-  const CAVEAT = "Note : le versement des primes CEE intervient sous réserve de validation du dossier.";
-  const CEE = "CEE : Certificats d'Économies d'Énergie.";
-
-  const S1 = "Ouverture", S2 = "Qui nous sommes", S3 = "Notre accompagnement", S4 = "Devenir partenaire";
-
-  // ===== 1. Couverture =====
-  pres.addSection({ title: S1 });
-  {
-    const s = pres.addSlide({ masterName: "Couverture", sectionTitle: S1 });
-    await photo(s, "artisan-clients", 0.46, 1.0, 6.2, 0, W - 6.2, H, "Un artisan serre la main de ses clients devant une pompe à chaleur");
-    s.addImage({ path: LOGO_FULL, x: M, y: 0.6, ...logoFull(2.6), altText: "Logo Cercle Énergie — Le partenaire unique de vos projets" });
-    T(s, "PLAQUETTE DE PRÉSENTATION", { x: M, y: 2.8, w: 5.3, h: 0.3, fontSize: 12, bold: true, color: BLUE, charSpacing: 2 });
-    s.addText("Le partenaire CEE des professionnels de la rénovation énergétique", { placeholder: "title" });
-    T(s, "Accompagnement et valorisation des Certificats d'Économies d'Énergie (CEE) pour les artisans, installateurs et entreprises du bâtiment.",
-      { x: M, y: 5.3, w: 5.0, h: 1.3, fontSize: 14 });
-  }
-
-  // ===== 2. Synthèse =====
-  {
-    const s = content(S1, "En bref : concentrez-vous sur vos chantiers, Cercle Énergie vous accompagne sur vos dossiers CEE", CEE);
-    const cards = [
-      ["Le constat", "Les aides CEE contribuent à financer vos projets, mais leurs démarches administratives sont lourdes à constituer, vérifier et suivre."],
-      ["Qui nous sommes", "Une société spécialisée dans l'accompagnement et la valorisation des CEE. Mandataire, elle travaille en collaboration avec des délégataires CEE."],
-      ["Cinq services", "Étude d'éligibilité, valorisation financière, gestion administrative, accompagnement réglementaire et suivi du financement."],
-      ["Ce que vous y gagnez", "Des démarches simplifiées, des dossiers sécurisés et des projets valorisés : vous restez concentré sur votre métier."],
-    ];
-    const gap = 0.3, cw = (CW - gap) / 2, ch = (BOTTOM - TOP - gap) / 2;
-    cards.forEach(([label, text], i) => {
-      const x = M + (i % 2) * (cw + gap), y = TOP + Math.floor(i / 2) * (ch + gap);
-      box(s, x, y, cw, ch, TINT, "Carte " + (i + 1));
-      num(s, i + 1, x + 0.35, y + 0.35, 0.55);
-      T(s, label, { x: x + 1.15, y: y + 0.35, w: cw - 1.5, h: 0.55, fontSize: 17, bold: true, color: NAVY, valign: "middle" });
-      T(s, text, { x: x + 1.15, y: y + 1.0, w: cw - 1.5, h: ch - 1.2 });
-    });
-  }
-
-  // ===== 3. Le problème =====
-  pres.addSection({ title: S2 });
-  {
-    const s = content(S2, "Les aides CEE sont une opportunité pour vos chantiers, mais leur gestion administrative est lourde", CEE);
-    await photo(s, "paperasse", 0.13, 0.65, M, TOP, 4.2, BOTTOM - TOP, "Un artisan submergé par des piles de dossiers");
-    const x = 5.3, w = W - M - x;
-    await iconCircle(s, "LuSprout", x, TOP, 0.55, GREEN, HEX.white);
-    T(s, "L'opportunité", { x: x + 0.8, y: TOP, w: w - 0.8, h: 0.55, fontSize: 17, bold: true, color: NAVY, valign: "middle" });
-    T(s, "Les Certificats d'Économies d'Énergie (CEE) contribuent au financement des projets de rénovation et d'efficacité énergétique.",
-      { x: x + 0.8, y: TOP + 0.65, w: w - 0.8, h: 0.6 });
-    hair(s, x, 3.35, w);
-    await iconCircle(s, "LuFiles", x, 3.6, 0.55, NAVY, HEX.white);
-    T(s, "La contrainte : des démarches pour chaque dossier", { x: x + 0.8, y: 3.6, w: w - 0.8, h: 0.55, fontSize: 17, bold: true, color: NAVY, valign: "middle" });
-    T(s, bullets([
-      "Identifier les aides CEE mobilisables selon les travaux",
-      "Rechercher de bonnes conditions de valorisation",
-      "Constituer, vérifier et suivre le dossier",
-      "Respecter les exigences documentaires et les conditions du dispositif",
-      "Se coordonner avec les acteurs du financement CEE",
-    ], { space: 4 }), { x: x + 0.8, y: 4.25, w: w - 0.8, h: 1.75 });
-    T(s, "Autant de temps qui n'est pas consacré à votre métier.", { x: x + 0.8, y: 6.15, w: w - 0.8, h: 0.4, bold: true, color: NAVY, valign: "middle" });
-  }
-
-  // ===== 4. Qui est Cercle Énergie =====
-  {
-    const s = content(S2, "Cercle Énergie est une société spécialisée dans l'accompagnement et la valorisation des CEE", CEE);
-    const rows = [
-      ["Notre spécialité", "L'accompagnement et la valorisation des Certificats d'Économies d'Énergie (CEE).", 0.7],
-      ["Notre statut", "Mandataire, Cercle Énergie travaille en collaboration avec des délégataires CEE pour aider les professionnels à financer leurs projets de rénovation et d'efficacité énergétique.", 1.15],
-      ["Notre rôle", "Mettre en relation les entreprises d'installation avec les acteurs du financement CEE, tout en simplifiant l'ensemble des démarches administratives.", 1.15],
-    ];
-    const lw = 7.5; let y = TOP;
-    rows.forEach(([label, text, h], i) => {
-      if (i) { y += 0.2; hair(s, M, y, lw); y += 0.2; }
-      T(s, label, { x: M, y, w: 2.1, h: 0.4, fontSize: 15, bold: true, color: NAVY });
-      T(s, text, { x: M + 2.3, y, w: lw - 2.3, h });
-      y += h;
-    });
-    box(s, M, 5.8, lw, 0.75, TINT, "Objectif");
-    T(s, [
-      { text: "Notre objectif : ", options: { bold: true, color: NAVY } },
-      { text: "vous permettre de vous concentrer sur votre métier.", options: { color: NAVY } },
-    ], { x: M + 0.3, y: 5.8, w: lw - 0.6, h: 0.75, valign: "middle" });
-    await photo(s, "equipe", 0.42, 1.0, 8.5, TOP, W - M - 8.5, BOTTOM - TOP, "L'équipe travaille sur un dossier autour d'une table");
-  }
-
-  // ===== 5. Chaîne de valeur =====
-  {
-    const s = content(S2, "Cercle Énergie fait le lien entre les entreprises d'installation et les acteurs du financement CEE", CAVEAT);
-    const cw = 3.4, ch = 3.55, gap = (CW - 3 * cw) / 2, y = TOP, pad = 0.25, aw = 0.6;
-    const nodes = [
-      ["LuWrench", "Installateurs & artisans", "Vous réalisez les travaux", "Pompes à chaleur, chauffage, isolation, ventilation, rénovation énergétique."],
-      ["LuHandshake", "Cercle Énergie", "Mandataire CEE", "Vous accompagne et simplifie l'ensemble des démarches administratives."],
-      ["LuLandmark", "Délégataires CEE", "Acteurs du financement CEE", "Traitement des dossiers et versement des primes, sous réserve de validation du dossier."],
-    ];
-    for (let i = 0; i < 3; i++) {
-      const [ic, title, sub, text] = nodes[i], x = M + i * (cw + gap), mid = i === 1;
-      box(s, x, y, cw, ch, mid ? NAVY : TINT, "Acteur " + (i + 1));
-      await iconCircle(s, ic, x + pad, y + 0.3, 0.7, mid ? GREEN : NAVY, HEX.white);
-      T(s, title, { x: x + pad, y: y + 1.2, w: cw - 2 * pad, h: 0.4, fontSize: 15, bold: true, color: mid ? WHITE : NAVY });
-      T(s, sub, { x: x + pad, y: y + 1.62, w: cw - 2 * pad, h: 0.3, fontSize: 12, bold: true, color: mid ? GREEN : BLUE });
-      T(s, text, { x: x + pad, y: y + 2.1, w: cw - 2 * pad, h: ch - 2.3, color: mid ? WHITE : GREY });
-      if (i < 2) s.addShape(pres.ShapeType.leftRightArrow, { x: x + cw + (gap - aw) / 2, y: y + ch / 2 - 0.18, w: aw, h: 0.36, fill: { color: GREEN }, objectName: "Lien " + (i + 1) });
+  nodes.forEach((n) => {
+    const dd = n.core ? 3.0 : d, y = cy - dd / 2;
+    if (n.core) {
+      s.addShape(p.ShapeType.ellipse, { x: n.x - 0.12, y: y - 0.12, w: dd + 0.24, h: dd + 0.24, fill: { color: C.green }, line: { type: 'none' } });
+      s.addShape(p.ShapeType.ellipse, { x: n.x, y, w: dd, h: dd, fill: { color: C.white }, line: { type: 'none' } });
+      s.addImage({ path: IMG('logo_mark.png'), x: n.x + 0.45, y: y + 0.78, w: 2.1, h: 2.1 * (760 / 1090) });
+    } else {
+      s.addShape(p.ShapeType.ellipse, { x: n.x, y, w: dd, h: dd, fill: { color: n.fill }, line: { type: 'none' } });
+      T(s, n.t, { x: n.x, y, w: dd, h: dd, fontSize: 21, bold: true, align: 'center', valign: 'middle' });
     }
-    T(s, [
-      { text: "Un partenaire unique : ", options: { bold: true, color: NAVY } },
-      { text: "Cercle Énergie met en relation votre entreprise et les acteurs du financement CEE, et simplifie vos démarches.", options: {} },
-    ], { x: M, y: 5.7, w: CW, h: 0.85, valign: "middle" });
-  }
+    T(s, n.sub, { x: n.x - 0.6, y: cy + dd / 2 + 0.25, w: dd + 1.2, h: 0.4, fontSize: 16, bold: true, align: 'center', color: C.navy });
+  });
+  T(s, 'Nous mettons en relation les entreprises d’installation et les acteurs du financement des CEE.', { x: 0.9, y: 6.55, w: 11.5, h: 0.4, fontSize: 14, color: C.grey, align: 'center' });
+  pageNo(s, 4, true);
+}
 
-  // ===== 6. Métiers et secteurs =====
-  {
-    const s = content(S2, "Nous accompagnons les métiers de la rénovation énergétique dans quatre secteurs d'activité");
-    T(s, "Vos métiers", { x: M, y: TOP, w: 3.2, h: 0.4, fontSize: 17, bold: true, color: NAVY });
-    T(s, bullets(["Pompes à chaleur et systèmes de chauffage", "Isolation et rénovation énergétique", "Ventilation et équipements thermiques"]),
-      { x: M, y: TOP + 0.5, w: 3.2, h: 1.9 });
-    hair(s, M, 4.25, 3.2);
-    T(s, "Vos secteurs", { x: M, y: 4.45, w: 3.2, h: 0.4, fontSize: 17, bold: true, color: NAVY });
-    T(s, bullets(["Résidentiel", "Tertiaire", "Industriel", "Agricole"], { space: 4 }), { x: M, y: 4.95, w: 3.2, h: 1.6 });
-    const tiles = [
-      ["pac-installation", "PAC & chauffage", "Installation d'une pompe à chaleur", 0.2, 1.0],
-      ["isolation-combles", "Isolation", "Pose d'isolant en combles", 0, 1],
-      ["renovation", "Rénovation énergétique", "Pose d'une fenêtre en rénovation", 0, 1],
-      ["tertiaire", "Tertiaire", "Immeuble de bureaux", 0, 1],
-      ["industrie", "Industrie", "Technicien dans un site industriel", 0, 0.9],
-      ["agricole", "Agricole", "Serre et bâtiment agricole", 0, 1],
-    ];
-    const gx = 4.3, gap = 0.2, tw = (W - M - gx - 2 * gap) / 3, th = 1.8;
-    for (let i = 0; i < 6; i++) {
-      const [img, label, alt, a, b] = tiles[i];
-      const x = gx + (i % 3) * (tw + gap), y = TOP + Math.floor(i / 3) * 2.4;
-      await photo(s, img, a, b, x, y, tw, th, alt);
-      T(s, label, { x, y: y + th + 0.08, w: tw, h: 0.32, fontSize: 13, bold: true, color: NAVY, valign: "middle" });
-    }
-  }
+// ---------- 5. Secteurs (mosaïque pleine page)
+{
+  const s = p.addSlide(); dark(s);
+  const tiles = [['pompe-a-chaleur.jpg', 'Pompes à chaleur'], ['chauffage.jpg', 'Chauffage'], ['isolation-combles.jpg', 'Isolation'], ['renovation.jpg', 'Rénovation énergétique'], ['tertiaire.jpg', 'Tertiaire'], ['industrie.jpg', 'Industrie'], ['agricole.jpg', 'Agricole']];
+  const tw = W / 4, th = H / 2, g = 0.04;
+  // tuile titre en haut à gauche
+  s.addShape(p.ShapeType.rect, { x: 0, y: 0, w: tw, h: th, fill: { color: C.green }, line: { type: 'none' } });
+  T(s, 'NOS TERRAINS', { x: 0.4, y: 0.5, w: tw - 0.6, h: 0.3, fontSize: 11, bold: true, charSpacing: 4 });
+  T(s, 'Partout où il y a de l’énergie à économiser.', { x: 0.4, y: 0.95, w: tw - 0.6, h: 2.4, fontSize: 24, bold: true, lineSpacingMultiple: 1.0 });
+  tiles.forEach(([img, label], i) => {
+    const k = i + 1, x = (k % 4) * tw, y = Math.floor(k / 4) * th;
+    s.addImage({ path: IMG(img), x: x + g, y: y + g, w: tw - 2 * g, h: th - 2 * g, sizing: { type: 'cover', w: tw - 2 * g, h: th - 2 * g } });
+    s.addShape(p.ShapeType.rect, { x: x + g, y: y + th - 0.95, w: tw - 2 * g, h: 0.95 - g, fill: { color: C.navyD, transparency: 22 }, line: { type: 'none' } });
+    T(s, label, { x: x + 0.3, y: y + th - 0.95, w: tw - 0.5, h: 0.9, fontSize: 17, bold: true, valign: 'middle' });
+  });
+}
 
-  // ===== 7. Les cinq services =====
-  pres.addSection({ title: S3 });
-  {
-    const s = content(S3, "Cinq services couvrent tout le cycle de votre dossier CEE, de l'éligibilité au suivi du financement", CAVEAT);
-    const steps = [
-      ["Étude d'éligibilité", "Identification des aides CEE mobilisables selon les travaux envisagés."],
-      ["Valorisation financière", "Recherche des meilleures conditions de valorisation auprès de nos partenaires."],
-      ["Gestion administrative", "Constitution, vérification et suivi des dossiers."],
-      ["Accompagnement réglementaire", "Vérification des exigences documentaires et des conditions du dispositif."],
-      ["Suivi du financement", "Coordination avec les délégataires jusqu'au traitement du dossier et au versement des primes, sous réserve de validation."],
-    ];
-    const gap = 0.28, cw = (CW - 4 * gap) / 5, d = 0.72, y = 2.0;
-    s.addShape(pres.ShapeType.line, { x: M + d, y: y + d / 2, w: 4 * (cw + gap) - d, h: 0, line: { color: RULE, width: 2 } });
-    steps.forEach(([title, text], i) => {
-      const x = M + i * (cw + gap);
-      num(s, i + 1, x, y, d, { fontSize: 20 });
-      T(s, title, { x, y: 3.0, w: cw, h: 0.75, fontSize: 15, bold: true, color: NAVY });
-      T(s, text, { x, y: 3.8, w: cw, h: 1.75 });
-    });
-    box(s, M, 5.75, CW, 0.8, TINT, "Résultat");
-    T(s, [
-      { text: "Résultat : ", options: { bold: true, color: NAVY } },
-      { text: "vous vous concentrez sur votre métier, Cercle Énergie vous accompagne dans la gestion et le financement de vos dossiers CEE.", options: { color: NAVY } },
-    ], { x: M + 0.3, y: 5.75, w: CW - 0.6, h: 0.8, valign: "middle" });
-  }
+// ---------- 6. Cinq services
+{
+  const s = p.addSlide(); s.background = { color: C.mist };
+  kicker(s, 'Nos services', 0.9, 0.7, C.greenD);
+  T(s, 'Cinq étapes. Zéro paperasse pour vous.', { x: 0.9, y: 1.1, w: 11.5, h: 0.9, fontSize: 36, bold: true, color: C.navy });
+  const steps = [['Étude d’éligibilité', 'Identification des aides CEE mobilisables selon vos travaux.'], ['Valorisation financière', 'Recherche des meilleures conditions auprès de nos partenaires.'], ['Gestion administrative', 'Constitution, vérification et suivi des dossiers.'], ['Accompagnement réglementaire', 'Vérification des exigences documentaires et des conditions du dispositif.'], ['Suivi du financement', 'Coordination avec les délégataires jusqu’au versement des primes*.']];
+  const cw = 2.2, gap = 0.14, x0 = 0.9;
+  steps.forEach(([t, d], i) => {
+    const x = x0 + i * (cw + gap), last = i === 4;
+    s.addShape(p.ShapeType.roundRect, { x, y: 2.4, w: cw, h: 3.85, fill: { color: last ? C.navy : C.white }, line: { type: 'none' }, rectRadius: 0.16, shadow: { type: 'outer', color: '0B3566', opacity: 0.14, blur: 14, offset: 5, angle: 90 } });
+    T(s, '0' + (i + 1), { x: x + 0.25, y: 2.6, w: cw - 0.4, h: 1.0, fontSize: 50, bold: true, color: last ? C.lime : C.green });
+    T(s, t, { x: x + 0.25, y: 3.75, w: cw - 0.4, h: 0.85, fontSize: 12.5, bold: true, color: last ? C.white : C.navy, lineSpacingMultiple: 1.0 });
+    T(s, d, { x: x + 0.25, y: 4.65, w: cw - 0.45, h: 1.5, fontSize: 12, color: last ? C.pale : C.grey, lineSpacingMultiple: 1.2 });
+  });
+  T(s, '* Sous réserve de validation du dossier.', { x: 0.9, y: 6.6, w: 8, h: 0.3, fontSize: 11, color: C.grey });
+  pageNo(s, 6, true);
+}
 
-  // ===== 8. Qui fait quoi =====
-  {
-    const s = content(S3, "Une répartition claire des rôles vous permet de rester concentré sur votre métier", CAVEAT);
-    const gap = 0.26, w1 = 3.5, w2 = CW - 2 * w1 - 2 * gap, h = BOTTOM - TOP;
-    const cols = [
-      [M, w1, "Vous", "Installateurs & artisans", ["Vous présentez les travaux envisagés", "Vous réalisez les travaux", "Vous restez concentré sur votre métier"]],
-      [M + w1 + gap, w2, "Cercle Énergie", "Mandataire CEE", [
-        "Identifie les aides CEE mobilisables",
-        "Recherche les meilleures conditions de valorisation auprès de ses partenaires",
-        "Constitue, vérifie et suit les dossiers",
-        "Vérifie les exigences documentaires et les conditions du dispositif",
-        "Coordonne avec les délégataires jusqu'au traitement du dossier"]],
-      [M + w1 + gap + w2 + gap, w1, "Délégataire CEE", "Acteur du financement CEE", ["Collabore avec Cercle Énergie", "Traitement du dossier", "Versement des primes, sous réserve de validation du dossier"]],
-    ];
-    cols.forEach(([x, w, title, sub, items], i) => {
-      const mid = i === 1;
-      box(s, x, TOP, w, h, mid ? NAVY : TINT, "Rôle " + (i + 1));
-      T(s, title, { x: x + 0.3, y: TOP + 0.3, w: w - 0.6, h: 0.4, fontSize: 18, bold: true, color: mid ? WHITE : NAVY });
-      T(s, sub, { x: x + 0.3, y: TOP + 0.72, w: w - 0.6, h: 0.3, fontSize: 12, bold: true, color: mid ? GREEN : BLUE });
-      T(s, bullets(items, { space: 8 }), { x: x + 0.3, y: TOP + 1.3, w: w - 0.6, h: h - 1.5, color: mid ? WHITE : GREY });
-    });
-  }
+// ---------- 7. Qui fait quoi
+{
+  const s = p.addSlide(); dark(s);
+  ring(s, 9.8, 3.9, 6.4, C.teal, 26, 75);
+  kicker(s, 'Répartition des rôles', 0.9, 0.7);
+  T(s, [{ text: 'Vous, sur le chantier. ' }, { text: 'Nous, sur le dossier.', options: { color: C.lime } }], { x: 0.9, y: 1.1, w: 11.6, h: 0.9, fontSize: 34, bold: true });
+  const cols = [
+    { t: 'Vous', k: 'Installateurs & artisans', li: ['Vous présentez les travaux envisagés', 'Vous réalisez les travaux', 'Vous restez concentré sur vos clients'], fill: '123F78', tc: C.white },
+    { t: 'Cercle Énergie', k: 'Mandataire CEE', li: ['Étudie l’éligibilité', 'Recherche la meilleure valorisation', 'Constitue et vérifie le dossier', 'Coordonne et suit le financement'], fill: C.green, tc: C.white, big: true },
+    { t: 'Délégataire CEE', k: 'Acteur du financement', li: ['Traite le dossier', 'Verse les primes, sous réserve de validation du dossier'], fill: '123F78', tc: C.white },
+  ];
+  const xs = [0.9, 4.55, 8.95], ws = [3.45, 4.2, 3.45];
+  cols.forEach((c, i) => {
+    const y = c.big ? 2.25 : 2.55, h = c.big ? 4.55 : 3.95;
+    s.addShape(p.ShapeType.roundRect, { x: xs[i], y, w: ws[i], h, fill: { color: c.fill }, line: { type: 'none' }, rectRadius: 0.18 });
+    T(s, c.t, { x: xs[i] + 0.35, y: y + 0.35, w: ws[i] - 0.6, h: 0.5, fontSize: c.big ? 26 : 22, bold: true });
+    T(s, c.k.toUpperCase(), { x: xs[i] + 0.35, y: y + 0.95, w: ws[i] - 0.6, h: 0.3, fontSize: 10, bold: true, charSpacing: 3, color: c.big ? C.navyD : C.lime });
+    T(s, c.li.map((l) => ({ text: l, options: { bullet: { code: '2713' }, breakLine: true, paraSpaceAfter: 9 } })), { x: xs[i] + 0.35, y: y + 1.5, w: ws[i] - 0.6, h: h - 1.7, fontSize: c.big ? 15 : 14, color: C.white, lineSpacingMultiple: 1.1 });
+  });
+  pageNo(s, 7);
+}
 
-  // ===== 9. Bénéfices =====
-  {
-    const s = content(S3, "Trois bénéfices pour votre entreprise : simplifier, sécuriser et valoriser vos projets");
-    const x1 = M, w1 = 2.7, x2 = 3.5, w2 = 4.75, x3 = 8.55, w3 = W - M - x3;
-    T(s, "CE QUE FAIT CERCLE ÉNERGIE", { x: x2, y: TOP, w: w2, h: 0.3, fontSize: 11, bold: true, color: BLUE, charSpacing: 1, valign: "middle" });
-    T(s, "CE QUE VOUS Y GAGNEZ", { x: x3, y: TOP, w: w3, h: 0.3, fontSize: 11, bold: true, color: BLUE, charSpacing: 1, valign: "middle" });
-    const rows = [
-      ["LuListChecks", "Simplifier", "Constitution, vérification et suivi de vos dossiers ; coordination avec les délégataires.", "Un partenaire unique pour vos démarches CEE : vous restez concentré sur votre métier."],
-      ["LuShieldCheck", "Sécuriser", "Vérification des exigences documentaires et des conditions du dispositif.", "Des dossiers vérifiés et suivis jusqu'à leur traitement."],
-      ["LuTrendingUp", "Valoriser", "Identification des aides CEE mobilisables et recherche des meilleures conditions de valorisation auprès de nos partenaires.", "Un financement CEE recherché aux meilleures conditions pour vos projets."],
-    ];
-    const rh = 1.3, y0 = TOP + 0.45, pitch = (BOTTOM - y0 - rh) / 2;
-    for (let i = 0; i < 3; i++) {
-      const [ic, verb, does, gain] = rows[i], y = y0 + i * pitch;
-      box(s, M, y, CW, rh, TINT, "Bénéfice " + (i + 1));
-      await iconCircle(s, ic, x1 + 0.25, y + (rh - 0.6) / 2, 0.6, GREEN, HEX.white);
-      T(s, verb, { x: x1 + 1.05, y, w: w1 - 1.05, h: rh, fontSize: 18, bold: true, color: NAVY, valign: "middle" });
-      T(s, does, { x: x2, y, w: w2 - 0.3, h: rh, valign: "middle" });
-      T(s, gain, { x: x3, y, w: w3 - 0.3, h: rh, valign: "middle", color: NAVY, bold: true });
-    }
-  }
+// ---------- 8. Trois bénéfices (colonnes photo)
+{
+  const s = p.addSlide(); dark(s);
+  const cols = [['dossier.jpg', 'Simplifier', 'Un interlocuteur unique pour toutes vos démarches CEE.'], ['remise-dossier.jpg', 'Sécuriser', 'Des dossiers vérifiés au regard des exigences du dispositif.'], ['artisan-clients.jpg', 'Valoriser', 'Les meilleures conditions recherchées auprès de nos partenaires.']];
+  const cw = W / 3;
+  cols.forEach(([img, t, d], i) => {
+    const x = i * cw;
+    s.addImage({ path: IMG(img), x, y: 0, w: cw, h: H, sizing: { type: 'cover', w: cw, h: H } });
+    s.addShape(p.ShapeType.rect, { x, y: 0, w: cw, h: H, fill: { color: C.navyD, transparency: 68 }, line: { type: 'none' } });
+    s.addShape(p.ShapeType.rect, { x, y: 4.0, w: cw, h: 3.5, fill: { color: C.navyD, transparency: 10 }, line: { type: 'none' } });
+    T(s, '0' + (i + 1), { x: x + 0.5, y: 0.55, w: 2, h: 0.8, fontSize: 40, bold: true, color: C.lime });
+    T(s, t, { x: x + 0.5, y: 4.35, w: cw - 0.8, h: 0.9, fontSize: 38, bold: true });
+    s.addShape(p.ShapeType.roundRect, { x: x + 0.5, y: 5.35, w: 0.8, h: 0.08, fill: { color: C.green }, line: { type: 'none' }, rectRadius: 0.04 });
+    T(s, d, { x: x + 0.5, y: 5.6, w: cw - 0.9, h: 1.3, fontSize: 15, color: C.pale, lineSpacingMultiple: 1.2 });
+  });
+}
 
-  // ===== 10. Avant / après =====
-  {
-    const s = content(S3, "Avec Cercle Énergie, la gestion de vos aides CEE ne repose plus sur vos seules équipes");
-    const x1 = M, w1 = 2.6, x2 = 3.4, w2 = 4.2, x3 = 8.3, w3 = W - M - x3;
-    T(s, "SANS ACCOMPAGNEMENT", { x: x2 + 0.3, y: TOP, w: w2 - 0.3, h: 0.3, fontSize: 11, bold: true, color: GREY, charSpacing: 1, valign: "middle" });
-    T(s, "AVEC CERCLE ÉNERGIE", { x: x3 + 0.3, y: TOP, w: w3 - 0.3, h: 0.3, fontSize: 11, bold: true, color: BLUE, charSpacing: 1, valign: "middle" });
-    const rows = [
-      ["Aides mobilisables", "À identifier par vos soins, selon chaque chantier", "Identifiées selon les travaux envisagés"],
-      ["Dossiers", "À constituer, vérifier et suivre en interne", "Constitués, vérifiés et suivis par Cercle Énergie"],
-      ["Exigences du dispositif", "À maîtriser et à contrôler seul", "Exigences documentaires et conditions vérifiées"],
-      ["Financement", "Acteurs du financement à identifier et à coordonner", "Un partenaire unique, en lien avec les délégataires"],
-    ];
-    const y0 = TOP + 0.45, gap = 0.12, rh = (BOTTOM - y0 - 3 * gap) / 4;
-    rows.forEach(([topic, before, after], i) => {
-      const y = y0 + i * (rh + gap);
-      T(s, topic, { x: x1, y, w: w1, h: rh, fontSize: 15, bold: true, color: NAVY, valign: "middle" });
-      box(s, x2, y, w2, rh, TINT, "Sans " + (i + 1));
-      T(s, before, { x: x2 + 0.3, y, w: w2 - 0.6, h: rh, valign: "middle" });
-      s.addShape(pres.ShapeType.rightArrow, { x: x2 + w2 + (x3 - x2 - w2 - 0.4) / 2, y: y + rh / 2 - 0.15, w: 0.4, h: 0.3, fill: { color: GREEN }, objectName: "Flèche " + (i + 1) });
-      box(s, x3, y, w3, rh, NAVY, "Avec " + (i + 1));
-      T(s, after, { x: x3 + 0.3, y, w: w3 - 0.6, h: rh, valign: "middle", color: WHITE, bold: true });
-    });
-  }
+// ---------- 9. Avant / après
+{
+  const s = p.addSlide(); s.background = { color: C.white };
+  s.addShape(p.ShapeType.rect, { x: W / 2, y: 0, w: W / 2, h: H, fill: { color: C.navy }, line: { type: 'none' } });
+  T(s, 'SANS ACCOMPAGNEMENT', { x: 0.9, y: 0.8, w: 5, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: '8A9BB3' });
+  T(s, 'Vous gérez tout.', { x: 0.9, y: 1.2, w: 5.4, h: 0.9, fontSize: 29, bold: true, color: C.navy });
+  T(s, 'AVEC CERCLE ÉNERGIE', { x: W / 2 + 0.8, y: 0.8, w: 5, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: C.lime });
+  T(s, 'Vous gérez vos chantiers.', { x: W / 2 + 0.8, y: 1.2, w: 5.8, h: 0.9, fontSize: 29, bold: true, color: C.white });
+  const rows = [['Aides à identifier vous-même, chantier par chantier', 'Aides identifiées selon vos travaux'], ['Dossiers à constituer, vérifier et suivre en interne', 'Dossiers constitués, vérifiés et suivis'], ['Exigences du dispositif à maîtriser seul', 'Exigences documentaires contrôlées'], ['Acteurs du financement à trouver et à coordonner', 'Un partenaire unique, en lien avec les délégataires']];
+  rows.forEach(([a, b], i) => {
+    const y = 2.65 + i * 1.08;
+    s.addShape(p.ShapeType.ellipse, { x: 0.9, y: y + 0.05, w: 0.42, h: 0.42, fill: { color: 'D6DEE8' }, line: { type: 'none' } });
+    T(s, '×', { x: 0.9, y: y + 0.05, w: 0.42, h: 0.42, fontSize: 16, bold: true, align: 'center', valign: 'middle', color: C.white });
+    T(s, a, { x: 1.55, y, w: 4.6, h: 0.8, fontSize: 16, color: C.grey, valign: 'middle' });
+    s.addShape(p.ShapeType.ellipse, { x: W / 2 + 0.8, y: y + 0.05, w: 0.42, h: 0.42, fill: { color: C.green }, line: { type: 'none' } });
+    T(s, '✓', { x: W / 2 + 0.8, y: y + 0.05, w: 0.42, h: 0.42, fontSize: 14, bold: true, align: 'center', valign: 'middle' });
+    T(s, b, { x: W / 2 + 1.45, y, w: 4.7, h: 0.8, fontSize: 17, bold: true, valign: 'middle' });
+  });
+  s.addShape(p.ShapeType.ellipse, { x: W / 2 - 0.55, y: 3.2, w: 1.1, h: 1.1, fill: { color: C.green }, line: { color: C.white, width: 5 } });
+  T(s, '→', { x: W / 2 - 0.55, y: 3.2, w: 1.1, h: 1.1, fontSize: 28, bold: true, align: 'center', valign: 'middle' });
+  pageNo(s, 9);
+}
 
-  // ===== 11. Démarrer un partenariat =====
-  pres.addSection({ title: S4 });
-  {
-    const s = content(S4, "Démarrer un partenariat avec Cercle Énergie se fait en quatre étapes simples", CAVEAT);
-    await photo(s, "dossier", 0.33, 0.80, M, TOP, 3.9, BOTTOM - TOP, "Une main complète un dossier au stylo");
-    const steps = [
-      ["Vous prenez contact", "Présentez-nous votre activité et les travaux que vous envisagez."],
-      ["Nous étudions l'éligibilité", "Nous identifions les aides CEE mobilisables selon vos travaux."],
-      ["Nous constituons le dossier", "Nous le constituons, le vérifions et en assurons le suivi."],
-      ["Nous suivons le financement", "Nous coordonnons avec les délégataires jusqu'au versement des primes, sous réserve de validation du dossier."],
-    ];
-    const x = 5.1, d = 0.6, pitch = 1.2, tx = x + d + 0.35;
-    s.addShape(pres.ShapeType.line, { x: x + d / 2, y: TOP + d, w: 0, h: 3 * pitch - d, line: { color: RULE, width: 2 } });
-    steps.forEach(([title, text], i) => {
-      const y = TOP + i * pitch;
-      num(s, i + 1, x, y, d);
-      T(s, title, { x: tx, y, w: W - M - tx, h: 0.4, fontSize: 17, bold: true, color: NAVY, valign: "middle" });
-      T(s, text, { x: tx, y: y + 0.45, w: W - M - tx, h: 0.6 });
-    });
-  }
+// ---------- 10. Démarrer
+{
+  const s = p.addSlide(); photo(s, 'equipe.jpg', 'ov_left.png');
+  kicker(s, 'Démarrer', 0.9, 0.75);
+  T(s, [{ text: 'Un échange,', options: { breakLine: true } }, { text: 'et nous prenons le relais.', options: { color: C.lime } }], { x: 0.9, y: 1.15, w: 8, h: 1.7, fontSize: 38, bold: true, lineSpacingMultiple: 0.98 });
+  const st = [['Vous prenez contact', 'Présentez-nous votre activité et vos travaux.'], ['Nous étudions l’éligibilité', 'Nous identifions les aides CEE mobilisables.'], ['Nous constituons le dossier', 'Constitution, vérification, suivi.'], ['Nous suivons le financement', 'Jusqu’au versement des primes, sous réserve de validation du dossier.']];
+  st.forEach(([t, d], i) => {
+    const y = 3.2 + i * 0.98;
+    s.addShape(p.ShapeType.ellipse, { x: 0.9, y, w: 0.72, h: 0.72, fill: { color: C.green }, line: { type: 'none' } });
+    T(s, String(i + 1), { x: 0.9, y, w: 0.72, h: 0.72, fontSize: 20, bold: true, align: 'center', valign: 'middle' });
+    T(s, t, { x: 1.85, y: y - 0.02, w: 6, h: 0.38, fontSize: 18, bold: true });
+    T(s, d, { x: 1.85, y: y + 0.38, w: 6, h: 0.4, fontSize: 13, color: C.pale });
+  });
+  pageNo(s, 10);
+}
 
-  // ===== 12. Message clé =====
-  {
-    const s = pres.addSlide({ masterName: "Message", sectionTitle: S4 });
-    await photo(s, "pac-installation", 0.44, 0.82, 0, 0, 5.0, H, "Un installateur raccorde une pompe à chaleur");
-    T(s, "NOTRE MESSAGE", { x: 5.8, y: 1.5, w: 5, h: 0.3, fontSize: 12, bold: true, color: BLUE, charSpacing: 2 });
-    s.addText([
-      { text: "« Vous réalisez les travaux, ", options: {} },
-      { text: "Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE. »", options: { color: BLUE } },
-    ], { placeholder: "title" });
-    T(s, "Le partenaire unique de vos projets", { x: 5.8, y: 5.5, w: 6.9, h: 0.4, fontSize: 16, italic: true, color: GREY });
-  }
+// ---------- 11. Message clé
+{
+  const s = p.addSlide(); photo(s, 'artisan-clients.jpg', 'ov_bottom.png');
+  ring(s, -2.2, -2.6, 5.6, C.lime, 28, 55);
+  T(s, [{ text: '« Vous réalisez les travaux, ', options: {} }, { text: 'Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE. »', options: { color: C.lime } }],
+    { x: 0.9, y: 3.9, w: 11.5, h: 2.6, fontSize: 36, bold: true, lineSpacingMultiple: 1.0, valign: 'bottom' });
+  pageNo(s, 11);
+}
 
-  // ===== 13. Clôture =====
-  {
-    const s = pres.addSlide({ masterName: "Cloture", sectionTitle: S4 });
-    await photo(s, "remise-dossier", 0.56, 0.97, 8.2, 0, W - 8.2, H, "Un artisan échange avec une conseillère autour d'un dossier");
-    s.addImage({ path: LOGO_FULL, x: M, y: 0.55, ...logoFull(2.2), altText: "Logo Cercle Énergie — Le partenaire unique de vos projets" });
-    s.addText("Devenez partenaire\nde Cercle Énergie", { placeholder: "title" });
-    T(s, "« Cercle Énergie : votre partenaire pour simplifier, sécuriser et valoriser vos projets d'économies d'énergie. »",
-      { x: M, y: 3.7, w: 6.9, h: 0.95, fontSize: 16 });
-    T(s, "CONTACTEZ-NOUS", { x: M, y: 5.0, w: 5, h: 0.3, fontSize: 12, bold: true, color: BLUE, charSpacing: 2 });
-    const contacts = [["LuPhone", "[Téléphone]"], ["LuMail", "[E-mail]"], ["LuGlobe", "[Site web]"]];
-    for (let i = 0; i < 3; i++) {
-      const x = M + i * 2.35, y = 5.5;
-      await iconCircle(s, contacts[i][0], x, y, 0.5, NAVY, HEX.white);
-      T(s, contacts[i][1], { x: x + 0.65, y, w: 1.6, h: 0.5, color: NAVY, bold: true, valign: "middle" });
-    }
-    s.addNotes("Les coordonnées entre crochets ([Téléphone], [E-mail], [Site web]) sont des champs à compléter : elles n'ont pas été fournies.");
-  }
+// ---------- 12. Appel à l'action
+{
+  const s = p.addSlide(); s.background = { color: C.green };
+  ring(s, 8.2, -2.8, 8.4, C.white, 40, 78); ring(s, -3.0, 3.6, 7.0, C.navy, 34, 80);
+  logoPill(s, 0.9, 0.7, 2.6);
+  T(s, 'Devenez partenaire.', { x: 0.9, y: 2.75, w: 11.5, h: 1.3, fontSize: 66, bold: true });
+  T(s, 'Cercle Énergie : votre partenaire pour simplifier, sécuriser et valoriser vos projets d’économies d’énergie.', { x: 0.9, y: 4.25, w: 9.2, h: 1.1, fontSize: 19, lineSpacingMultiple: 1.2 });
+  ['[Téléphone]', '[E-mail]', '[Site web]'].forEach((c, i) => {
+    const x = 0.9 + i * 3.25;
+    s.addShape(p.ShapeType.roundRect, { x, y: 5.8, w: 3.0, h: 0.8, fill: { color: C.navy }, line: { type: 'none' }, rectRadius: 0.4 });
+    T(s, c, { x, y: 5.8, w: 3.0, h: 0.8, fontSize: 16, bold: true, align: 'center', valign: 'middle' });
+  });
+}
 
-  await pres.writeFile({ fileName: OUT });
-  const applyThemePath = path.join(SKILL, "scripts/apply_theme.js");
-  if (fs.existsSync(applyThemePath)) {
-    await require(applyThemePath).applyTheme(OUT, THEME);
-  } else {
-    console.warn("ATTENTION : apply_theme.js introuvable — les couleurs du thème ne sont pas écrites (définir PPTX_SKILL_DIR).");
-  }
-  console.log("Écrit :", OUT, "| police :", FONT);
-})().catch((e) => { console.error(e); process.exit(1); });
+p.writeFile({ fileName: path.join(__dirname, 'Cercle-Energie-Plaquette.pptx') }).then((f) => console.log('écrit', f));
