@@ -9,6 +9,7 @@
   if (burger && nav) burger.addEventListener('click', () => {
     burger.setAttribute('aria-expanded', String(nav.classList.toggle('open')));
   });
+  $$('.nav a').forEach((l) => l.addEventListener('click', () => { nav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }));
 
   // apparition au défilement
   const items = $$('.rv');

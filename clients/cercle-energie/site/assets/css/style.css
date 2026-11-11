@@ -364,3 +364,69 @@ main{overflow:clip}
   .panel.on{min-height:340px}.panel .lab{writing-mode:horizontal-tb;transform:none;bottom:auto;top:34px;left:62px}
 }
 @media (max-width:600px){.compare{grid-template-columns:1fr}.cmp{min-height:170px}.marquee{padding:16px 0}}
+
+/* =====================================================================
+   V3 — landing page unique : photo HD, explication CEE, bénéfices, formulaire
+   ===================================================================== */
+section[id]{scroll-margin-top:96px}
+.hero2 img.bgv{object-position:70% 50%;animation:kb 26s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.04)}to{transform:scale(1.16) translate(-1.5%,-1%)}}
+.hero2 .shade{background:linear-gradient(100deg,rgba(7,38,75,.97) 0%,rgba(7,38,75,.86) 38%,rgba(7,38,75,.25) 72%,rgba(7,38,75,.05) 100%),linear-gradient(to top,rgba(7,38,75,.85),transparent 40%)}
+.proof{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:34px;font-family:var(--display);font-weight:600;font-size:.95rem;color:#E6F0FB}
+.proof span{display:flex;align-items:center;gap:10px}
+.proof span:before{content:"";width:22px;height:22px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat}
+
+/* CEE en 30 secondes */
+.flow4{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:56px;counter-reset:f;text-align:left}
+.f4{position:relative;padding:34px 30px 34px 34px;background:#fff;border:1px solid var(--line);counter-increment:f}
+.f4:first-child{border-radius:var(--r) 0 0 var(--r)}.f4:last-child{border-radius:0 var(--r) var(--r) 0}
+.f4+.f4{border-left:0}
+.f4:before{content:"0" counter(f);font-family:var(--display);font-weight:800;font-size:.95rem;color:var(--green-d);letter-spacing:.1em}
+.f4 h3{margin-top:14px;font-size:1.22rem}
+.f4 p{font-size:.98rem;margin-top:10px}
+.f4:not(:last-child):after{content:"";position:absolute;right:-17px;top:50%;width:32px;height:32px;margin-top:-16px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/16px no-repeat;z-index:2}
+.f4.me{background:var(--navy);border-color:var(--navy)}.f4.me h3{color:#fff}.f4.me p{color:#CFE0F3}.f4.me:before{color:var(--lime)}
+
+/* détails dans les étapes */
+.s2 ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.s2 li{font-size:.9rem;font-weight:500;background:var(--mist);color:var(--navy);padding:7px 14px;border-radius:999px}
+
+/* trois bénéfices */
+.trio3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.b3{border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 30px 70px -40px rgba(11,53,102,.5);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.b3:hover{transform:translateY(-10px)}
+.b3 .ph{position:relative;aspect-ratio:4/4.4;overflow:hidden}
+.b3 .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s}
+.b3:hover .ph img{transform:scale(1.06)}
+.b3 .ph span{position:absolute;left:24px;top:22px;font-family:var(--display);font-weight:800;font-size:1rem;color:#fff;background:var(--green);padding:8px 14px;border-radius:999px}
+.b3 .tx{padding:30px 30px 36px}
+.b3 h3{font-size:clamp(1.7rem,2.6vw,2.3rem);font-weight:800}
+.b3 p{margin-top:10px}
+
+/* bloc final : rejoindre */
+.join{background:var(--green);color:#fff;overflow:hidden;padding:clamp(80px,10vw,150px) 0}
+.join:after{content:"";position:absolute;right:-14vw;top:-20vw;width:54vw;height:54vw;border-radius:50%;border:5vw solid rgba(255,255,255,.18)}
+.join:before{content:"";position:absolute;left:-18vw;bottom:-28vw;width:48vw;height:48vw;border-radius:50%;border:4.4vw solid rgba(7,38,75,.13)}
+.join .wrap{position:relative;z-index:1}
+.join h2{font-size:clamp(3rem,7.4vw,6.8rem);line-height:.92;letter-spacing:-.04em;color:#fff}
+.join .lead{color:#F2FAE0}
+.join .mini-steps li:before{background:var(--navy-d)}
+.join .mini-steps b{color:#fff}
+.join .mini-steps li{color:#F2FAE0}
+.join .note{color:#E4F3C4}
+.join form.lead-form{color:var(--body)}
+.who td,.who th{font-size:1rem}
+@media (max-width:980px){
+  .flow4{grid-template-columns:1fr}.f4,.f4:first-child,.f4:last-child{border-radius:0;border:1px solid var(--line)}.f4+.f4{border-top:0}
+  .f4:first-child{border-radius:var(--r) var(--r) 0 0}.f4:last-child{border-radius:0 0 var(--r) var(--r)}
+  .f4:not(:last-child):after{right:auto;left:34px;top:auto;bottom:-16px;transform:rotate(90deg)}
+  .trio3{grid-template-columns:1fr}.b3 .ph{aspect-ratio:16/11}
+}
+.mega{font-size:clamp(2.7rem,6.9vw,6.6rem)}
+.hero2{padding-top:130px}
+.statement .fill{font-size:clamp(1.9rem,3.9vw,3.5rem)}
+@media (max-width:980px){.hero2 .shade{background:linear-gradient(to top,rgba(7,38,75,.97) 0%,rgba(7,38,75,.9) 55%,rgba(7,38,75,.55) 100%)}.hero2 img.bgv{object-position:78% 50%}}
+.mega{font-size:clamp(2.7rem,min(6.9vw,13.2vh),6.6rem)}
+.hero2 .halo{right:-30vw;top:-36vw;border-color:rgba(185,227,90,.3)}
+@media (max-width:980px){.mega{font-size:clamp(2.5rem,11vw,4.2rem)}.hero2 .halo{right:-34vw;top:-30vw}}
+@media (min-width:981px) and (max-height:800px){.mega{font-size:min(5.6vw,10.6vh)}.hero2{padding-top:110px;padding-bottom:44px}.hero2-foot{margin-top:22px}.proof{margin-top:18px}}
