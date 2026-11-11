@@ -27,6 +27,7 @@ def page(fname, title, desc, body):
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
+<div class="progress" id="progress"></div>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.html" aria-label="Cercle Énergie — accueil"><img src="assets/img/logo_mark_t.png" alt="Cercle Énergie" width="300" height="209"></a>
@@ -58,8 +59,9 @@ def page(fname, title, desc, body):
 
 CTA = f"""<section class="cta">
   <div class="wrap">
-    <div class="rv"><span class="eyebrow" style="color:var(--lime)">Devenez partenaire</span><h2>Concentrez-vous sur vos chantiers. Nous nous occupons de vos aides CEE.</h2></div>
-    <a class="btn btn-primary rv" style="--d:.15s" href="devenir-partenaire.html">Devenir partenaire {ARROW}</a>
+    <h2 class="rv">Devenez<br>partenaire.</h2>
+    <p class="rv">Concentrez-vous sur vos chantiers et vos clients. Nous nous occupons de vos aides CEE.</p>
+    <a class="btn btn-dark btn-xl rv" href="devenir-partenaire.html">Parlons de vos chantiers {ARROW}</a>
   </div>
 </section>"""
 
@@ -93,86 +95,87 @@ CHAIN = """<div class="chain">
     </div>"""
 
 # ------------------------------------------------------------------ index
-index = f"""<section class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow rv">Mandataire CEE · Partenaire des professionnels</span>
-      <h1 class="rv" style="--d:.08s">Vous réalisez les travaux.<br><em>Nous gérons vos aides CEE.</em></h1>
-      <p class="lead rv" style="--d:.16s">Cercle Énergie accompagne les artisans, installateurs et entreprises du bâtiment dans la gestion et le financement de leurs Certificats d’Économies d’Énergie — de l’étude d’éligibilité jusqu’au versement des primes.</p>
-      <div class="hero-cta rv" style="--d:.24s">
-        <a class="btn btn-primary" href="devenir-partenaire.html">Devenir partenaire {ARROW}</a>
-        <a class="btn btn-ghost" href="#video">Voir la vidéo</a>
-      </div>
-      <div class="hero-tags rv" style="--d:.32s"><span>Pompes à chaleur</span><span>Chauffage</span><span>Isolation</span><span>Rénovation énergétique</span><span>Tertiaire</span><span>Industrie</span><span>Agricole</span></div>
-    </div>
-    <div class="orbit rv" style="--d:.2s">
-      <svg viewBox="0 0 600 600" aria-hidden="true">
-        <defs><linearGradient id="ga" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#B9E35A"/><stop offset="1" stop-color="#73AF01"/></linearGradient>
-        <linearGradient id="gb" x1="1" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#01B7BA"/><stop offset="1" stop-color="#016CB4"/></linearGradient></defs>
-        <g class="ring-a"><circle cx="300" cy="300" r="286" fill="none" stroke="url(#ga)" stroke-width="12" stroke-linecap="round" stroke-dasharray="620 1180"/></g>
-        <g class="ring-b"><circle cx="300" cy="300" r="264" fill="none" stroke="url(#gb)" stroke-width="8" stroke-linecap="round" stroke-dasharray="420 1240"/></g>
-      </svg>
-      <div class="disc"><video autoplay muted loop playsinline poster="assets/img/pac-installation.jpg"><source src="assets/video/hero.mp4" type="video/mp4"></video></div>
-      <span class="chip c1"><i></i>Étude d’éligibilité</span>
-      <span class="chip c2"><i></i>Dossiers pris en charge</span>
-      <span class="chip c3"><i></i>Suivi des primes</span>
-    </div>
-  </div>
-</section>
+MARQ = "".join(f"<span>{t}</span>" for t in ["Pompes à chaleur", "Chauffage", "Isolation", "Ventilation", "Rénovation énergétique", "Tertiaire", "Industrie", "Agricole"])
+CMP = [("Aides", "À identifier vous-même, chantier par chantier", "Identifiées selon vos travaux"),
+       ("Dossiers", "À constituer, vérifier et suivre en interne", "Constitués, vérifiés et suivis pour vous"),
+       ("Exigences", "À maîtriser et contrôler seul", "Exigences documentaires contrôlées"),
+       ("Financement", "Des acteurs à trouver et à coordonner", "Un partenaire unique, en lien avec les délégataires")]
+cmp_html = "".join(f'<div class="cmp" style="--i:{i}"><small>{k}</small><p class="a">{a}</p><p class="b">{b}</p><i></i></div>' for i, (k, a, b) in enumerate(CMP))
+s2_html = "".join(f'<div class="s2" data-n="0{i+1}"><h3>{t}</h3><p>{d}</p></div>' for i, (t, d) in enumerate(STEPS))
+PANELS = [("pompe-a-chaleur.jpg", "Pompes à chaleur", "Installateurs de pompes à chaleur et de systèmes thermodynamiques."),
+          ("chauffage.jpg", "Chauffage", "Systèmes de chauffage, ventilation et équipements thermiques."),
+          ("isolation-combles.jpg", "Isolation", "Entreprises spécialisées dans l’isolation des bâtiments."),
+          ("renovation.jpg", "Rénovation énergétique", "Entreprises de rénovation énergétique et entreprises générales du bâtiment."),
+          ("tertiaire.jpg", "Tertiaire", "Bureaux, commerces, établissements recevant du public."),
+          ("industrie.jpg", "Industrie", "Sites de production, utilités et équipements thermiques."),
+          ("agricole.jpg", "Agricole", "Exploitations, serres et bâtiments d’élevage.")]
+panels_html = "".join(
+    f'<article class="panel{" on" if i == 0 else ""}" tabindex="0"><img src="assets/img/{img}" alt="" loading="lazy"><span class="no">0{i+1}</span><span class="lab">{t}</span><div class="in"><h3>{t}</h3><p>{d}</p></div></article>'
+    for i, (img, t, d) in enumerate(PANELS))
 
-<section class="trio">
-  <div class="wrap"><div class="trio-grid rv">
-    <div><b>Simplifier</b><p>Un interlocuteur unique pour toutes vos démarches CEE.</p></div>
-    <div><b>Sécuriser</b><p>Des dossiers vérifiés au regard des exigences du dispositif.</p></div>
-    <div><b>Valoriser</b><p>Les meilleures conditions recherchées auprès de nos partenaires.</p></div>
-  </div></div>
-</section>
-
-<section>
-  <div class="wrap split">
-    <div class="media rv"><img src="assets/img/paperasse.jpg" alt="Artisan débordé par les démarches administratives" loading="lazy"><span class="badge">Les aides CEE ne devraient pas vous coûter vos soirées.</span></div>
-    <div>
-      <span class="eyebrow rv">Le constat</span>
-      <h2 class="rv">Les CEE développent votre activité. La paperasse, beaucoup moins.</h2>
-      <p class="lead rv">Les Certificats d’Économies d’Énergie sont un vrai levier commercial pour vos chantiers. Mais entre l’éligibilité, les pièces à réunir et le suivi, la charge administrative retombe sur vous.</p>
-      <ul class="ticks rv">
-        <li>Vous vous concentrez sur vos chantiers et vos clients.</li>
-        <li>Nous vous accompagnons dans la gestion administrative et financière de vos aides CEE.</li>
-        <li>Nos équipes restent à vos côtés à chaque étape.</li>
-      </ul>
+index = f"""<section class="hero2">
+  <video class="bgv" autoplay muted loop playsinline poster="assets/img/pac-installation.jpg"><source src="assets/video/hero.mp4" type="video/mp4"></video>
+  <div class="shade"></div><div class="halo"></div><div class="halo b"></div>
+  <div class="wrap">
+    <span class="eyebrow">Mandataire CEE · Partenaire des professionnels</span>
+    <h1 class="mega"><span class="ln" style="--i:0"><span>Vous réalisez</span></span><span class="ln" style="--i:1"><span>les travaux.</span></span><span class="ln lime" style="--i:2"><span>Nous gérons</span></span><span class="ln lime" style="--i:3"><span>vos aides CEE.</span></span></h1>
+    <div class="hero2-foot">
+      <p class="lead">Cercle Énergie accompagne les artisans, installateurs et entreprises du bâtiment dans la gestion et le financement de leurs Certificats d’Économies d’Énergie.</p>
+      <div class="hero-cta" style="margin:0"><a class="btn btn-primary btn-xl" href="devenir-partenaire.html">Devenir partenaire {ARROW}</a><a class="btn btn-ghost btn-xl" href="#video">Voir la vidéo</a></div>
     </div>
   </div>
 </section>
 
-<section class="tint">
+<div class="marquee" aria-hidden="true"><div class="track">{MARQ}{MARQ}</div></div>
+
+<section class="statement" id="constat">
+  <div class="wrap">
+    <span class="eyebrow rv">Le constat</span>
+    <p class="fill" data-fill data-green="6">Les CEE font gagner des chantiers. La paperasse vous les fait payer. Nous reprenons la main sur vos dossiers.</p>
+  </div>
+</section>
+
+<section class="tint" id="comparer">
+  <div class="wrap center">
+    <span class="eyebrow rv">Avant / après</span>
+    <h2 class="rv">Qui porte vos dossiers CEE ?</h2>
+    <div class="switch rv" id="switch" role="group" aria-label="Comparer"><span class="knob"></span><button type="button" data-v="sans" aria-pressed="true">Sans accompagnement</button><button type="button" data-v="avec" aria-pressed="false">Avec Cercle Énergie</button></div>
+    <div class="compare rv" id="compare">{cmp_html}</div>
+  </div>
+</section>
+
+<section class="dark">
   <div class="wrap center">
     <span class="eyebrow rv">Notre rôle</span>
-    <h2 class="rv">Le lien entre vos chantiers et le financement</h2>
+    <h2 class="rv">Le lien entre vos chantiers<br>et le financement.</h2>
     <p class="lead rv">En tant que mandataire, Cercle Énergie travaille en collaboration avec des délégataires CEE pour accompagner les professionnels dans leurs projets.</p>
     {CHAIN}
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <span class="eyebrow rv">Nos services</span>
-    <h2 class="rv">Un accompagnement complet, en cinq étapes</h2>
-    <div class="steps">{steps_html}</div>
-    <p class="note rv">* Sous réserve de validation du dossier.</p>
-    <p class="rv" style="margin-top:28px"><a class="btn btn-line" href="services.html">Découvrir nos services {ARROW}</a></p>
+<section id="services">
+  <div class="wrap svc2">
+    <div class="stick">
+      <span class="eyebrow rv">Nos services</span>
+      <h2 class="rv">Cinq étapes.<br>Un seul interlocuteur.</h2>
+      <div class="bigno" id="bigno" aria-hidden="true">01</div>
+    </div>
+    <div class="rail" id="rail"><span class="fillbar" id="fillbar"></span>{s2_html}
+      <p class="note">* Sous réserve de validation du dossier.</p>
+      <p style="margin-top:24px"><a class="btn btn-line" href="services.html">Découvrir nos services {ARROW}</a></p>
+    </div>
   </div>
 </section>
 
 <section class="tint">
   <div class="wrap">
-    <span class="eyebrow rv">Secteurs d’intervention</span>
-    <h2 class="rv">De nombreux domaines d’activité</h2>
-    <p class="lead rv">Résidentiel, tertiaire, industriel ou agricole : nous accompagnons les professionnels de l’efficacité énergétique, quel que soit leur terrain.</p>
-    <div class="cards">{cards_html}</div>
+    <span class="eyebrow rv">Nos terrains</span>
+    <h2 class="rv">Partout où il y a de l’énergie<br>à économiser.</h2>
+    <div class="panels rv" id="panels">{panels_html}</div>
   </div>
 </section>
 
-<section id="video">
+<section id="video" class="dark">
   <div class="wrap center">
     <span class="eyebrow rv">En vidéo</span>
     <h2 class="rv">Cercle Énergie en 72 secondes</h2>
