@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:M;font-weight:500;src:url(../assets/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(../assets/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(../assets/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(../assets/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:600;font-style:italic;src:url(../assets/montserrat-latin-600-italic.woff2)}
+@font-face{font-family:M;font-weight:700;font-style:italic;src:url(../assets/montserrat-latin-700-italic.woff2)}
+:root{--navy:#0B3566;--green:#73AF01;--blue:#016CB4;--teal:#01B7BA;--ink:#0B2545}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:M,sans-serif;color:#fff}
+.abs{position:absolute}
+.full{position:absolute;left:0;top:0;width:1920px;height:1080px}
+[data-in]{opacity:0;will-change:transform,opacity}
+svg{display:block}
+
+/* ---------- logo bug ---------- */
+#bug{right:56px;top:48px;background:#fff;border-radius:22px;padding:12px 22px 10px;box-shadow:0 10px 30px rgba(6,24,52,.28)}
+#bug img{width:176px;display:block}
+
+/* ---------- bottom gradient for lower thirds ---------- */
+.grad{left:0;bottom:0;width:1920px;height:520px;background:linear-gradient(to top,rgba(5,22,48,.86) 0%,rgba(5,22,48,.55) 45%,rgba(5,22,48,0) 100%)}
+
+/* ---------- chips (hook) ---------- */
+.chip{display:inline-flex;align-items:center;gap:18px;background:#fff;color:var(--navy);font-weight:700;font-size:46px;line-height:1;padding:22px 34px 22px 26px;border-radius:999px;box-shadow:0 12px 34px rgba(6,24,52,.3)}
+.chip .dot{width:22px;height:22px;border-radius:50%;background:var(--green);flex:none}
+.chip.alt .dot{background:var(--blue)}
+.chip.alt2 .dot{background:var(--teal)}
+
+/* ---------- lower third text ---------- */
+.lt{left:110px;bottom:96px;width:1500px}
+.lt .k{font-weight:700;font-size:30px;letter-spacing:.16em;text-transform:uppercase;color:#B9E35A;margin-bottom:18px}
+.lt .h{font-weight:800;font-size:74px;line-height:1.08;letter-spacing:-.01em;text-shadow:0 4px 26px rgba(0,0,0,.35)}
+.lt .h em{font-style:normal;color:#B9E35A}
+.lt .s{font-weight:600;font-size:38px;margin-top:20px;color:#EAF2FB;text-shadow:0 3px 18px rgba(0,0,0,.4)}
+.bar{width:120px;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--green),var(--teal));margin-bottom:26px}
+
+/* ---------- white stage (logo + diagram) ---------- */
+.stage{background:#fff;overflow:hidden}
+.stage img{mix-blend-mode:multiply}
+.arc{border-radius:50%;position:absolute}
+.node{position:absolute;display:flex;flex-direction:column;align-items:center;text-align:center;width:520px}
+.node .c{width:250px;height:250px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 22px 50px rgba(11,53,102,.22)}
+.node .t{font-weight:800;font-size:44px;color:var(--navy);margin-top:34px;line-height:1.1}
+.node .d{font-weight:500;font-size:28px;color:#4A5F7D;margin-top:12px;line-height:1.3}
+.center .c{width:380px;height:380px;background:#fff;position:relative}
+.center .c:before{content:"";position:absolute;inset:-10px;border-radius:50%;padding:10px;background:conic-gradient(from 200deg,var(--blue),var(--teal),var(--green),#9BCB1F,var(--blue));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.center img{width:300px}
+.pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:32px;padding:14px 34px;border-radius:999px;letter-spacing:.04em}
+.cap{position:absolute;left:0;width:1920px;text-align:center;color:var(--navy);font-weight:700;font-size:44px}
+.cap em{font-style:normal;color:var(--green)}
+
+/* ---------- domain labels ---------- */
+.dom{left:96px;bottom:92px;display:inline-flex;align-items:center;gap:24px;background:#fff;color:var(--navy);border-radius:26px;padding:20px 40px 20px 22px;font-weight:800;font-size:54px;line-height:1;box-shadow:0 14px 40px rgba(6,24,52,.34)}
+.dom .ic{width:84px;height:84px;border-radius:20px;background:linear-gradient(135deg,var(--green),#4E9A0A);display:flex;align-items:center;justify-content:center;flex:none}
+.dom.b .ic{background:linear-gradient(135deg,var(--blue),#0B3566)}
+.dom svg{width:52px;height:52px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tile{position:absolute;width:640px;height:540px}
+.tile span{position:absolute;left:22px;bottom:20px;background:rgba(255,255,255,.96);color:var(--navy);font-weight:700;font-size:28px;padding:10px 20px;border-radius:999px;box-shadow:0 6px 18px rgba(6,24,52,.3)}
+.gridline{position:absolute;background:#fff}
+#mosCap{left:0;top:440px;width:1920px;text-align:center}
+#mosCap div{display:inline-block;background:var(--navy);color:#fff;font-weight:800;font-size:60px;padding:30px 60px;border-radius:28px;box-shadow:0 20px 60px rgba(6,24,52,.5);border:5px solid #fff}
+#mosCap em{font-style:normal;color:#B9E35A}
+
+/* ---------- mission panel ---------- */
+#mis{left:0;top:0;width:900px;height:1080px;background:linear-gradient(120deg,#082A55 0%,#0B3566 55%,#0E4C8A 100%);clip-path:polygon(0 0,100% 0,84% 100%,0 100%);padding:0 120px 0 110px;display:flex;flex-direction:column;justify-content:center}
+#mis .k{font-weight:700;font-size:34px;letter-spacing:.18em;text-transform:uppercase;color:#B9E35A}
+#mis .h{font-weight:800;font-size:76px;line-height:1.1;margin-top:26px;white-space:nowrap}
+
+/* ---------- services panel ---------- */
+#svc{left:0;top:0;width:960px;height:1080px;background:#fff;color:var(--navy);padding:92px 70px 0 96px;box-shadow:30px 0 80px rgba(6,24,52,.25)}
+#svc .k{font-weight:700;font-size:26px;letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
+#svc .h{font-weight:800;font-size:56px;line-height:1.1;margin:14px 0 40px}
+.step{display:flex;align-items:center;gap:28px;height:138px;position:relative}
+.step .n{width:92px;height:92px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;
+  background:color-mix(in srgb,var(--green) calc(var(--p,0)*100%),#E6ECF3);box-shadow:0 0 0 calc(var(--p,0)*10px) rgba(115,175,1,.18)}
+.step svg{width:48px;height:48px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke:color-mix(in srgb,#fff calc(var(--p,0)*100%),#8FA0B5)}
+.step .tx{transform:translateX(calc(var(--p,0)*10px))}
+.step .a{white-space:nowrap;font-weight:800;font-size:36px;line-height:1.1;color:color-mix(in srgb,var(--navy) calc(var(--p,0)*100%),#9AA8BA)}
+.step .b{font-weight:500;font-size:25px;line-height:1.25;margin-top:6px;color:color-mix(in srgb,#40577A calc(var(--p,0)*100%),#B4BECC)}
+#rail{position:absolute;left:141px;top:300px;width:6px;height:560px;background:#E6ECF3;border-radius:6px}
+#railfill{position:absolute;left:0;top:0;width:6px;border-radius:6px;background:linear-gradient(var(--green),var(--teal))}
+#svcNote{position:absolute;left:96px;bottom:44px;font-weight:500;font-size:21px;color:#6B7C93}
+#svcEnd{position:absolute;left:96px;right:60px;bottom:86px;font-weight:700;font-size:30px;color:var(--navy)}
+#svcEnd em{font-style:normal;color:var(--green)}
+
+/* ---------- end card ---------- */
+.words{position:absolute;left:0;top:660px;width:1920px;display:flex;justify-content:center;gap:34px}
+.word{display:inline-flex;align-items:center;gap:16px;font-weight:800;font-size:50px;color:var(--navy);background:#F1F6FB;border-radius:999px;padding:20px 40px 20px 24px}
+.word i{width:50px;height:50px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
+.word svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+#cta{left:0;top:812px;width:1920px;text-align:center}
+#cta .btn{display:inline-flex;align-items:center;gap:22px;background:linear-gradient(90deg,var(--green),#4E9A0A);color:#fff;font-weight:800;font-size:54px;padding:30px 64px;border-radius:999px;box-shadow:0 18px 44px rgba(78,154,10,.42)}
+#cta svg{width:46px;height:46px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#endMsg{left:0;top:972px;width:1920px;text-align:center;font-weight:600;font-size:31px;color:#40577A}
+#endMsg b{color:var(--navy);font-weight:800}
+</style>
+</head>
+<body>
+
+<!-- ===== lower-third gradient (video sections) ===== -->
+<div class="abs grad" data-in="0.3" data-out="13.5" data-dy="0" data-din="0.6"></div>
+<div class="abs grad" data-in="49.5" data-out="59.1" data-dy="0" data-din="0.5"></div>
+
+<!-- ===== logo bug ===== -->
+<div class="abs" id="bug" data-in="0.9" data-out="13.4" data-dy="-20"><img src="../assets/logo_mark.png"></div>
+<div class="abs" data-in="25.1" data-out="32.6" data-dy="-20" style="right:56px;top:48px;background:#fff;border-radius:22px;padding:12px 22px 10px;box-shadow:0 10px 30px rgba(6,24,52,.28)"><img src="../assets/logo_mark.png" style="width:176px;display:block"></div>
+<div class="abs" data-in="36.2" data-out="58.9" data-dy="-20" style="right:56px;top:48px;background:#fff;border-radius:22px;padding:12px 22px 10px;box-shadow:0 10px 30px rgba(6,24,52,.28)"><img src="../assets/logo_mark.png" style="width:176px;display:block"></div>
+
+<!-- ===== S1 hook chips ===== -->
+<div class="abs" style="left:110px;bottom:96px;display:flex;flex-direction:column;align-items:flex-start;gap:20px">
+  <div class="chip" data-in="1.15" data-out="5.0" data-dx="-50" data-dy="0"><span class="dot"></span>Artisans</div>
+  <div class="chip alt" data-in="2.05" data-out="5.05" data-dx="-50" data-dy="0"><span class="dot"></span>Installateurs</div>
+  <div class="chip alt2" data-in="2.85" data-out="5.1" data-dx="-50" data-dy="0"><span class="dot"></span>Professionnels de la rénovation énergétique</div>
+</div>
+
+<!-- ===== S2 lower thirds ===== -->
+<div class="abs lt" data-in="5.75" data-out="10.15">
+  <div class="bar"></div>
+  <div class="h">Développez votre activité<br>grâce aux <em>aides CEE</em></div>
+  <div class="s">Certificats d’Économies d’Énergie</div>
+</div>
+<div class="abs lt" data-in="10.55" data-out="13.4">
+  <div class="bar"></div>
+  <div class="h">Sans la complexité<br><em>administrative</em></div>
+</div>
+
+<!-- ===== white stage: logo sting + diagram ===== -->
+<div class="full stage" id="stage1">
+  <div class="arc" style="left:-320px;top:-380px;width:900px;height:900px;border:70px solid rgba(115,175,1,.10)"></div>
+  <div class="arc" style="right:-380px;bottom:-460px;width:1100px;height:1100px;border:90px solid rgba(1,108,180,.08)"></div>
+  <!-- big logo -->
+  <div class="abs" id="bigLogo" style="left:460px;top:160px;width:1000px"><img src="../assets/logo_full.png" style="width:1000px;display:block"></div>
+
+  <!-- diagram -->
+  <div class="cap" style="top:110px;font-size:34px;letter-spacing:.16em;text-transform:uppercase;color:var(--green)" data-in="17.5" data-out="24.6" data-dy="-20">Mandataire CEE</div>
+  <div class="cap" style="top:162px;font-size:58px;font-weight:800" data-in="17.7" data-out="24.6" data-dy="-20">Le lien entre vos chantiers et le financement</div>
+
+  <svg class="abs" style="left:0;top:0" width="1920" height="1080" id="links">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#0B3566"/><stop offset="1" stop-color="#01B7BA"/></linearGradient>
+      <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#01B7BA"/><stop offset="1" stop-color="#73AF01"/></linearGradient>
+    </defs>
+    <g id="linkL" opacity="0">
+      <line id="lineL" x1="486" y1="560" x2="748" y2="560" stroke="url(#g1)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M512 532 L482 560 L512 588" fill="none" stroke="#0B3566" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M722 532 L752 560 L722 588" fill="none" stroke="#01B7BA" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle id="dotL1" r="11" cy="560" fill="#73AF01"/><circle id="dotL2" r="11" cy="560" fill="#016CB4"/>
+    </g>
+    <g id="linkR" opacity="0">
+      <line x1="1172" y1="560" x2="1434" y2="560" stroke="url(#g2)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M1198 532 L1168 560 L1198 588" fill="none" stroke="#01B7BA" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1408 532 L1438 560 L1408 588" fill="none" stroke="#73AF01" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle id="dotR1" r="11" cy="560" fill="#73AF01"/><circle id="dotR2" r="11" cy="560" fill="#016CB4"/>
+    </g>
+  </svg>
+
+  <div class="node" style="left:80px;top:435px" data-in="18.0" data-out="24.6" data-dx="-60" data-dy="0">
+    <div class="c" style="background:linear-gradient(135deg,#0E4C8A,#0B3566)">
+      <svg width="136" height="136" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z"/><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M4 15v-3a6 6 0 0 1 6-6"/><path d="M14 6a6 6 0 0 1 6 6v3"/></svg>
+    </div>
+    <div class="t">Installateurs<br>&amp; artisans</div>
+    <div class="d">Entreprises du bâtiment<br>et de la rénovation énergétique</div>
+  </div>
+
+  <div class="node center" id="centerNode" style="left:700px;top:370px">
+    <div class="c"><img src="../assets/logo_mark.png"></div>
+    <div style="margin-top:44px" data-in="18.6" data-out="24.6" data-dy="20"><span class="pill">Votre mandataire CEE</span></div>
+  </div>
+
+  <div class="node" style="left:1320px;top:435px" data-in="21.1" data-out="24.6" data-dx="60" data-dy="0">
+    <div class="c" style="background:linear-gradient(135deg,#8CC418,#4E9A0A)">
+      <svg width="130" height="130" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="6" width="26" height="34" rx="3"/><path d="M15 14h14M15 20h14M15 26h7"/>
+        <circle cx="34" cy="33" r="8" fill="#5FA60E"/><path d="M37 30.2a4 4 0 1 0 0 5.6M29.5 32h5M29.5 34.4h5"/>
+      </svg>
+    </div>
+    <div class="t">Délégataires<br>CEE</div>
+    <div class="d">Acteurs du financement<br>des Certificats d’Économies d’Énergie</div>
+  </div>
+</div>
+
+<!-- ===== S5 domain labels ===== -->
+<div class="abs dom" data-in="25.0" data-out="26.2" data-din="0.3" data-dout="0.15"><div class="ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="9.5" cy="12" r="4"/><path d="M9.5 8v8M5.5 12h8M17 9h2M17 12h2M17 15h2"/></svg></div>Pompes à chaleur</div>
+<div class="abs dom b" data-in="26.3" data-out="27.05" data-din="0.25" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/></svg></div>Chauffage</div>
+<div class="abs dom" data-in="27.15" data-out="28.0" data-din="0.25" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5M3 16l9 5 9-5"/></svg></div>Isolation</div>
+<div class="abs dom b" data-in="28.1" data-out="29.55" data-din="0.25" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M13 12l-3 4h4l-3 4"/></svg></div>Rénovation énergétique</div>
+<div class="abs dom" data-in="29.65" data-out="30.85" data-din="0.25" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></svg></div>Bâtiments tertiaires</div>
+<div class="abs dom b" data-in="30.95" data-out="31.65" data-din="0.2" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V10l6 4v-4l6 4V5h4v16z"/><path d="M7 17h2M12 17h2"/></svg></div>Industrie</div>
+<div class="abs dom" data-in="31.75" data-out="32.7" data-din="0.2" data-dout="0.12"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 13c-5 0-7-3-7-7 4 0 7 2 7 7z"/><path d="M12 11c0-4 2-7 7-7 0 4-2 7-7 7z"/><path d="M6 21h12"/></svg></div>Agricole</div>
+
+<!-- ===== mosaic ===== -->
+<div class="full" id="mos" data-in="32.75" data-out="35.85" data-dy="0" data-din="0.01" data-dout="0.01">
+  <div class="gridline" style="left:637px;top:0;width:6px;height:1080px"></div>
+  <div class="gridline" style="left:1277px;top:0;width:6px;height:1080px"></div>
+  <div class="gridline" style="left:0;top:537px;width:1920px;height:6px"></div>
+  <div class="tile" style="left:0;top:0"><span style="bottom:auto;top:20px">Pompes à chaleur</span></div>
+  <div class="tile" style="left:640px;top:0"><span style="bottom:auto;top:20px">Isolation</span></div>
+  <div class="tile" style="left:1280px;top:0"><span style="bottom:auto;top:20px">Rénovation énergétique</span></div>
+  <div class="tile" style="left:0;top:540px"><span>Tertiaire</span></div>
+  <div class="tile" style="left:640px;top:540px"><span>Industrie</span></div>
+  <div class="tile" style="left:1280px;top:540px"><span>Agricole</span></div>
+</div>
+<div class="abs" id="mosCap" data-in="33.0" data-out="35.55" data-dy="0" data-s="0.86" data-din="0.4"><div>De nombreux <em>domaines d’activité</em></div></div>
+
+<!-- ===== S6 mission ===== -->
+<div class="abs" id="mis" data-in="35.89" data-out="39.35" data-dx="-900" data-dy="0" data-din="0.01" data-dout="0.3" data-noop="1">
+  <div class="k" data-in="36.15" data-out="39.3" data-dy="20">Notre mission</div>
+  <div class="h" data-in="37.5" data-out="39.3" data-dy="30">Vous simplifier<br>les démarches.</div>
+</div>
+
+<!-- ===== S7 services ===== -->
+<div class="abs" id="svc" data-in="39.45" data-out="49.4" data-dx="-960" data-dy="0" data-din="0.5" data-dout="0.35" data-noop="1">
+  <div class="k">Nos services</div>
+  <div class="h">Un accompagnement complet</div>
+  <div id="rail"><div id="railfill"></div></div>
+  <div class="step" data-on="39.9"><div class="n"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M8.5 11l2 2 3.5-4"/></svg></div><div class="tx"><div class="a">Étude d’éligibilité</div><div class="b">Identification des aides CEE mobilisables</div></div></div>
+  <div class="step" data-on="43.85"><div class="n"><svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M6 15l4-4 3 3 5-6"/><path d="M15 8h3v3"/></svg></div><div class="tx"><div class="a">Valorisation financière</div><div class="b">Les meilleures conditions auprès de nos partenaires</div></div></div>
+  <div class="step" data-on="41.4"><div class="n"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 13l2 2 4-4"/></svg></div><div class="tx"><div class="a">Gestion administrative</div><div class="b">Constitution, vérification et suivi des dossiers</div></div></div>
+  <div class="step" data-on="46.6"><div class="n"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div><div class="tx"><div class="a">Accompagnement réglementaire</div><div class="b">Exigences documentaires et conditions du dispositif</div></div></div>
+  <div class="step" data-on="45.35"><div class="n"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15 9.2a4 4 0 1 0 0 5.6M7.5 11h5.5M7.5 13.4h5.5"/></svg></div><div class="tx"><div class="a">Suivi du financement</div><div class="b">Coordination jusqu’au versement des primes*</div></div></div>
+  <div id="svcNote">* Sous réserve de validation du dossier.</div>
+</div>
+
+<!-- ===== S8/S9 key message ===== -->
+<div class="abs lt" style="width:1700px" data-in="49.9" data-out="58.95">
+  <div class="bar"></div>
+  <div class="h" style="font-size:70px">Vous réalisez les travaux,</div>
+  <div class="h" style="font-size:54px;font-weight:700;margin-top:14px;line-height:1.18" data-in="52.95" data-out="58.95" data-dy="24"><em>Cercle d’Énergie</em> vous accompagne dans la gestion<br>et le financement de vos aides CEE.</div>
+</div>
+
+<!-- ===== end card ===== -->
+<div class="full stage" id="stage2">
+  <div class="arc" style="left:-360px;bottom:-420px;width:1000px;height:1000px;border:80px solid rgba(1,108,180,.08)"></div>
+  <div class="arc" style="right:-300px;top:-380px;width:900px;height:900px;border:70px solid rgba(115,175,1,.10)"></div>
+  <div class="abs" id="endLogo" style="left:540px;top:70px;width:840px"><img src="../assets/logo_full.png" style="width:840px;display:block"></div>
+  <div class="words">
+    <div class="word" data-in="62.05" data-out="99" data-dy="26" data-s="0.9"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Simplifier</div>
+    <div class="word" data-in="62.95" data-out="99" data-dy="26" data-s="0.9"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Sécuriser</div>
+    <div class="word" data-in="64.1" data-out="99" data-dy="26" data-s="0.9"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Valoriser</div>
+  </div>
+  <div class="abs" id="cta" data-in="66.3" data-out="99" data-dy="30" data-s="0.92"><span class="btn" id="ctaBtn">Devenez partenaire<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  <div class="abs" id="endMsg" data-in="67.0" data-out="99" data-dy="16">Vous réalisez les travaux, <b>Cercle d’Énergie</b> vous accompagne dans la gestion et le financement de vos aides CEE.</div>
+</div>
+
+<!-- intro fade from white -->
+<div class="full" id="fadeIn" style="background:#fff"></div>
+
+<script>
+const c01=x=>Math.max(0,Math.min(1,x));
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const P=(t,t0,d)=>c01((t-t0)/d);
+const items=[...document.querySelectorAll('[data-in]')].map(el=>({el,
+  tin:+el.dataset.in,tout:+el.dataset.out,din:+(el.dataset.din||.45),dout:+(el.dataset.dout||.3),
+  dx:+(el.dataset.dx||0),dy:el.dataset.dy!==undefined?+el.dataset.dy:34,s:+(el.dataset.s||1),slide:!!el.dataset.noop}));
+const steps=[...document.querySelectorAll('.step')];
+const $=id=>document.getElementById(id);
+function circle(el,t,tIn,dIn,tOut,dOut){ // circle wipe in, fade out
+  const a=eio(P(t,tIn,dIn)); const o=1-P(t,tOut,dOut);
+  if(a<=0||o<=0){el.style.visibility='hidden';return 0}
+  el.style.visibility='visible';el.style.clipPath=`circle(${a*1130}px at 960px 540px)`;el.style.opacity=o;return a;
+}
+window.renderAt=function(t){
+  for(const it of items){
+    const a=eo(P(t,it.tin,it.din)), b=P(t,it.tout,it.dout);
+    const el=it.el;
+    if(a<=0||b>=1){el.style.opacity=0;el.style.visibility='hidden';continue}
+    el.style.visibility='visible';
+    if(it.slide){ // panels slide fully, stay opaque
+      const k=a*(1-eio(b));el.style.opacity=1;el.style.transform=`translate(${it.dx*(1-k)}px,0)`;
+    }else{
+      el.style.opacity=a*(1-b);
+      const sc=it.s+(1-it.s)*a;
+      el.style.transform=`translate(${it.dx*(1-a)}px,${it.dy*(1-a)-10*b}px) scale(${sc})`;
+    }
+  }
+  $('fadeIn').style.opacity=1-P(t,0.05,0.7);
+  $('fadeIn').style.visibility=t>0.8?'hidden':'visible';
+
+  // stage 1 : logo sting then diagram
+  circle($('stage1'),t,13.45,0.55,24.55,0.4);
+  const bl=$('bigLogo');
+  const a=eo(P(t,13.75,0.7)), m=eio(P(t,16.85,0.75));
+  bl.style.opacity=a*(1-P(t,16.95,0.45));
+  bl.style.transform=`scale(${(0.86+0.14*a+0.03*P(t,13.75,3.4))*(1-0.55*m)})`;
+  const cn=$('centerNode');const ca=eo(P(t,17.25,0.6));
+  cn.style.opacity=ca*(1-P(t,24.6,0.3));cn.style.transform=`scale(${0.7+0.3*ca})`;
+  const lL=P(t,18.5,0.5), lR=P(t,21.5,0.5);
+  $('linkL').setAttribute('opacity',lL*(1-P(t,24.6,0.3)));$('linkR').setAttribute('opacity',lR*(1-P(t,24.6,0.3)));
+  const ph=((t*0.55)%1);
+  $('dotL1').setAttribute('cx',520+ph*194);$('dotL2').setAttribute('cx',714-ph*194);
+  $('dotR1').setAttribute('cx',1206+ph*194);$('dotR2').setAttribute('cx',1400-ph*194);
+
+  // services highlight
+  let lit=0;
+  for(const s of steps){const p=eo(P(t,+s.dataset.on,0.45));s.style.setProperty('--p',p);}
+  const order=steps.map(s=>+s.dataset.on);
+  // rail fills as far as the lowest lit step
+  let fill=0;steps.forEach((s,i)=>{const p=eo(P(t,+s.dataset.on,0.45));fill=Math.max(fill,p*(i+0.5)/steps.length);});
+  $('railfill').style.height=(fill*560)+'px';
+
+  // end card
+  circle($('stage2'),t,59.0,0.55,999,1);
+  const el=$('endLogo');const ea=eo(P(t,59.3,0.8));
+  el.style.opacity=ea;el.style.transform=`scale(${0.88+0.12*ea+0.02*P(t,59.3,12)})`;
+  const pulse=1+0.025*Math.sin(Math.max(0,t-66.8)*4.2)*(t>66.8?1:0);
+  $('ctaBtn').style.transform=`scale(${pulse})`;
+};
+window.ready=document.fonts.ready.then(()=>Promise.all([...document.images].map(i=>i.decode())));
+</script>
+</body>
+</html>
