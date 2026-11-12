@@ -11,7 +11,8 @@ ADS = {
   ("7clients", .55, "Étapes 1 et 2", "Le projet,<br>sa qualification.", ""),
   ("fournisseur", .50, "Étapes 3 et 4", "Visite technique,<br>équipements.", ""),
   ("6remise", .50, "Étapes 5 et 6", "Devis, chantier,<br>justificatifs.", ""),
-  ("rge", .42, "Étapes 7 et 8", "Dossier CEE suivi<br>jusqu’à la prime.", ""),
+  ("rge", .42, "Étapes 7 et 8", "Dossier suivi<br>jusqu’à la prime.", ""),
+  ("visite", .36, "Des outils dédiés", "<em>Pour des dossiers<br>de qualité.</em>", ""),
   ("reseau", .47, "Cercle Énergie", "<em>Un seul cercle<br>de services.</em>", "Parlons de vos projets")],
  "C2-installateurs-pac": [
   ("1hero", .74, "Pompes à chaleur", "Vous posez des<br>pompes à chaleur.", ""),
@@ -23,10 +24,11 @@ ADS = {
   ("1hero", .74, "Artisans locaux", "Vos chantiers<br>sont soignés.", ""),
   ("paperasse", .38, "Mais le soir…", "Les dossiers<br>vous épuisent.", ""),
   ("rge", .42, "Cercle Énergie", "<em>Des dossiers suivis.<br>Des règles claires.</em>", ""),
-  ("7clients", .55, "Cercle Énergie", "L’artisan du coin,<br><em>bien accompagné.</em>", "Parlons de vos projets")],
+  ("7clients", .55, "Cercle Énergie", "L’artisan local,<br><em>bien accompagné.</em>", "Parlons de vos projets")],
  "C4-moins-d-administratif": [
   ("paperasse2", .42, "Sur le terrain", "Moins de temps dans<br>l’administratif.", ""),
   ("1hero", .74, "Sur le terrain", "<em>Plus de temps<br>sur vos chantiers.</em>", ""),
+  ("visite", .36, "Des outils dédiés", "Pour des dossiers<br>de qualité.", ""),
   ("6remise", .50, "Cercle Énergie", "Un interlocuteur<br>identifié.", ""),
   ("reseau", .47, "Cercle Énergie", "Le partenaire unique<br>de vos projets.", "Parlons de vos projets")],
 }

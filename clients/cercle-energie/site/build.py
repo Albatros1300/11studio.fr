@@ -567,7 +567,7 @@ P["contact.html"] = ("Contact — Cercle Énergie", "Contactez Cercle Énergie, 
   <div class="wrap">
     <div class="contact-grid">
       <div class="box rv"><span class="n">Téléphone</span><h3>[Téléphone à compléter]</h3><p>Du lundi au vendredi.</p></div>
-      <div class="box rv"><span class="n">E-mail</span><h3>[E-mail à compléter]</h3><p>Nous revenons vers vous rapidement.</p></div>
+      <div class="box rv"><span class="n">E-mail</span><h3><a href="mailto:contact@cercleenergie.com">contact@cercleenergie.com</a></h3><p>Nous revenons vers vous rapidement.</p></div>
       <div class="box rv"><span class="n">Adresse</span><h3>[Adresse à compléter]</h3><p>Sur rendez-vous.</p></div>
     </div>
   </div>
@@ -623,7 +623,7 @@ def page(fname, title, desc, body):
       </div>
       <div><h4>Le Cercle</h4><ul><li><a href="accompagnement.html">Un cercle de services</a></li><li><a href="parcours.html">Le parcours de A à Z</a></li><li><a href="services.html">Le financement CEE</a></li><li><a href="visite-technique.html">La visite technique</a></li><li><a href="suivi-dossiers.html">Le suivi de vos dossiers</a></li><li><a href="equipements.html">Les équipements</a></li></ul></div>
       <div><h4>Le site</h4><ul><li><a href="comprendre-les-cee.html">Comprendre les CEE</a></li><li><a href="secteurs.html">Secteurs</a></li><li><a href="a-propos.html">À propos</a></li><li><a href="faq.html">Questions fréquentes</a></li><li><a href="plaquette.pdf">Présentation (PDF)</a></li></ul></div>
-      <div><h4>Contact</h4><ul><li><a href="devenir-partenaire.html">Parlons de vos projets</a></li><li><a href="contact.html">Nous contacter</a></li><li>[Téléphone à compléter]</li><li>[E-mail à compléter]</li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="devenir-partenaire.html">Parlons de vos projets</a></li><li><a href="contact.html">Nous contacter</a></li><li>[Téléphone à compléter]</li><li><a href="mailto:contact@cercleenergie.com">contact@cercleenergie.com</a></li></ul></div>
     </div>
     <div class="legal"><span>© 2026 Cercle Énergie. Tous droits réservés.</span><span><a href="mentions-legales.html">Mentions légales</a> — Primes CEE : selon les conditions contractuelles et la validation des dossiers.</span></div>
   </div>
