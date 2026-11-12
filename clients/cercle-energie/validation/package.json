@@ -1,0 +1,1 @@
+{ "name": "cercle-energie-validation", "private": true, "dependencies": { "@vercel/blob": "latest" } }

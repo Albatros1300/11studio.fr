@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sélection des créas — Cercle Énergie</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--o:#5C9A12;--od:#3F7A08;--os:#E4F5C6;--ink:#10140F;--ink2:#2B312C;--mu:#5E665F;--line:#E3E6E0;--bg:#F4F4F1;--navy:#0B3566;--ok:#1E8E5A;--oks:#E8F6EE;--wa:#B86E00;--was:#FFF3DC;--ko:#B3261E;--kos:#FDECEA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5}
+a{color:inherit}
+.wrap{width:min(1240px,100% - 32px);margin-inline:auto}
+header{position:sticky;top:0;z-index:30;}
+@media(max-width:899px){header{position:static}}
+header{background:#fff;border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:16px;padding:12px 0;flex-wrap:wrap}
+header img{height:46px}
+header .t{flex:1;min-width:220px}
+header h1{font-size:19px;letter-spacing:-.01em}
+header .meta{font-size:13px;color:var(--mu);font-weight:600}
+header label{font-size:14px;font-weight:700;color:var(--mu);display:flex;align-items:center;gap:8px}
+header input{font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:10px;width:200px}
+header input:focus{outline:none;border-color:var(--o)}
+.btn{font:inherit;font-weight:800;border:0;border-radius:999px;padding:11px 18px;cursor:pointer;background:var(--o);color:#fff}
+.btn:hover{background:var(--od)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.prog{font-size:14px;font-weight:700;color:var(--mu)}
+.prog b{color:var(--ink)}
+.hero{padding:34px 0 10px}
+.hero h2{font-size:clamp(28px,5vw,44px);letter-spacing:-.025em;line-height:1.08}
+.hero h2 em{font-style:normal;color:var(--o)}
+.hero p{color:var(--mu);max-width:60em;margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.legend span{font-size:13.5px;font-weight:700;border-radius:999px;padding:6px 12px}
+.boxes{display:grid;gap:14px;margin:22px 0}
+@media(min-width:900px){.boxes{grid-template-columns:1fr 1fr}}
+.box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.box h3{font-size:17px;margin-bottom:8px}
+.box li{margin:0 0 6px 18px;color:var(--ink2);font-size:14.5px}
+.box.warn{border:2px solid #F2C46D;background:#FFFBF2}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 18px;background:var(--bg);padding:10px 0}
+@media(min-width:900px){.filters{position:sticky;top:71px;z-index:20}}
+.filters button{font:inherit;font-weight:700;font-size:14px;border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer}
+.filters button.on{border-color:var(--o);background:var(--os);color:var(--od)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));padding-bottom:60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.card.st-valide{border:2px solid var(--ok)}.card.st-modifier{border:2px solid #F2C46D}.card.st-refuse{border:2px solid #E7A39E;opacity:.75}
+.media{background:#111;position:relative;display:flex;justify-content:center;align-items:center;aspect-ratio:4/5;cursor:zoom-in}
+.media img{width:100%;height:100%;object-fit:contain;background:#ECEBE8}
+.media video{width:100%;height:100%;object-fit:contain;background:#000;cursor:auto}
+.code{position:absolute;bottom:10px;left:10px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.25);background:#fff;font-weight:800;font-size:13px;padding:5px 9px;border-radius:8px}
+.fmts{display:flex;gap:6px;padding:10px 14px 0}
+.fmts button{font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:4px 9px;cursor:pointer}
+.fmts button.on{border-color:var(--o);color:var(--od);background:var(--os)}
+.fmts a{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--mu)}
+.body{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:3px 8px;background:var(--os);color:var(--od)}
+.chip.p{background:var(--o);color:#fff}.chip.t{background:#EEF0F8;color:var(--navy)}
+.card h4{font-size:18px;line-height:1.2;letter-spacing:-.01em}
+.card .sub{font-size:14px;color:var(--mu)}
+details.txt{font-size:13.5px;border:2px solid var(--navy);border-radius:12px;background:#F2F3F8;overflow:hidden}
+details.txt summary{font-weight:800;cursor:pointer;list-style:none;background:var(--navy);color:#fff;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14.5px}
+details.txt summary::-webkit-details-marker{display:none}
+details.txt summary::after{content:"Afficher ▾";font-size:12.5px;font-weight:700;background:#fff;color:var(--navy);border-radius:999px;padding:3px 10px}
+details.txt[open] summary::after{content:"Masquer ▴"}
+details.txt summary:hover{background:#262B40}
+details.txt > div,details.txt > pre{padding:0 14px}
+details.txt .row{padding:0 14px 12px}
+details.txt pre{white-space:pre-wrap;font-family:inherit;color:var(--ink2);margin-top:10px;font-size:13px}
+details.txt .row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+details.txt .row button{font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;cursor:pointer}
+.dec{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.dec button{font:inherit;font-weight:800;font-size:13.5px;border-radius:10px;padding:9px 4px;cursor:pointer;border:2px solid var(--line);background:#fff}
+.dec .v.on{background:var(--oks);border-color:var(--ok);color:var(--ok)}
+.dec .m.on{background:var(--was);border-color:#F2C46D;color:var(--wa)}
+.dec .r.on{background:var(--kos);border-color:#E7A39E;color:var(--ko)}
+textarea{font:inherit;font-size:14px;border:2px solid var(--line);border-radius:10px;padding:9px 11px;min-height:64px;resize:vertical;width:100%}
+textarea:focus{outline:none;border-color:var(--o)}
+.send{display:flex;gap:8px;align-items:center}
+.send .msg{font-size:13px;color:var(--mu)}
+.hist{border-top:1px dashed var(--line);padding-top:8px;display:grid;gap:6px}
+.hist div{font-size:13px;color:var(--ink2)}
+.hist b{color:var(--ink)}
+.tag-st{font-size:11.5px;font-weight:800;border-radius:6px;padding:1px 6px;margin-right:4px}
+.lb{position:fixed;inset:0;background:rgba(10,10,15,.92);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;cursor:zoom-out}
+.lb.on{display:flex}.lb img{max-width:100%;max-height:100%;border-radius:10px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;display:none;z-index:60}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/logo.png" alt="Cercle Énergie">
+  <div class="t"><h1>Sélection des créas Meta</h1><div class="meta">Cercle Énergie · 16 créations · novembre 2026</div></div>
+  <label>Votre nom <input id="who" placeholder="ex. Prénom, Cercle Énergie"></label>
+  <span class="prog"><b id="done">0</b> / <span id="tot">0</span> décidées</span>
+  <button class="btn" id="copy">Copier le compte-rendu</button>
+</div></header>
+
+<div class="wrap hero">
+  <h2>7 visuels, 9 vidéos. <em>Un seul axe : « Encore vos dossiers CEE à 21 h ? » — recruter des installateurs partenaires.</em></h2>
+  <p>Chaque visuel existe en carré (fil), 4:5 (fil mobile) et 9:16 (Stories et Reels). Les vidéos sont montrées en 9:16 et existent aussi en 4:5. Toutes les images et les plans ont été produits pour Cercle Énergie, sans marque de fournisseur visible : ce sont des images d’illustration, pas des photos de chantiers réels.</p>
+  <p>Pour chaque création : <b>Validé</b>, <b>À modifier</b> ou <b>Refusé</b>, un commentaire si besoin, puis <b>Envoyer</b>. Le texte de la pub proposé pour Meta est sous chaque création, avec le lien vers la page <a href="https://cercle-energie.vercel.app/devenir-partenaire" target="_blank">Devenir partenaire</a>.</p>
+  <div class="legend"><span style="background:var(--oks);color:var(--ok)">✔ Validé : part en diffusion</span><span style="background:var(--was);color:var(--wa)">✎ À modifier : on corrige et on vous remontre</span><span style="background:var(--kos);color:var(--ko)">✕ Refusé : on abandonne cette idée</span></div>
+  <div class="boxes">
+    <div class="box warn"><h3>À confirmer avant toute diffusion</h3><ul>
+      <li><b>Promesses</b> : « un seul interlocuteur », « dossiers vérifiés », « suivi de la prime » doivent correspondre à ce que vous faites réellement. La mention « sous réserve de validation du dossier » accompagne chaque évocation des primes.</li>
+      <li><b>Chiffres</b> : aucun délai de paiement ni prix de valorisation n’est affiché. Si vous souhaitez les mettre en avant, donnez-nous les chiffres que vous tenez.</li>
+      <li><b>Zone</b> : France entière par défaut. Indiquez les régions couvertes si elle est plus restreinte.</li>
+      <li><b>Coordonnées</b> : la page de destination n’affiche pas encore de téléphone ni d’e-mail.</li>
+    </ul></div>
+    <div class="box"><h3>Notre angle</h3><ul>
+      <li>Les concurrents parlent logiciel, délai de paiement et prix du MWh cumac. Sans chiffres à afficher, nous prenons l’autre levier qui marche : le temps passé le soir sur les dossiers.</li>
+      <li>Personne ne montre l’artisan dans cette situation. Nos visuels montrent la scène : 21 h, le chantier est fini, pas la journée.</li>
+      <li>Appel à l’action unique partout : « Devenir partenaire », un formulaire d’une minute.</li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="filters" id="filters">
+    <button data-f="all" class="on">Tout</button><button data-f="serie2" style="border-color:#1E8E5A;color:#0E5A38">★ Axe « 21 h »</button><button data-f="video">Vidéos</button><button data-f="visuel">Visuels</button><button data-f="EXTRAIT">Extraits du film</button><button data-f="MARQUE">Marque</button><button data-f="todo">Pas encore décidées</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="lb" id="lb"><img alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ITEMS = [{"id": "N1", "kind": "video", "file": "N1-21h-le-chantier-est-fini", "product": "AXE", "tag": "Film · voix off", "title": "21 h. Le chantier est fini… mais pas votre journée.", "sub": "Film court avec voix off et sous-titres : l'artisan sur ses dossiers, il transmet le chantier, la conseillère prend le relais, il rentre chez lui. 23 s.", "texte": "Encore vos dossiers CEE à 21 h ?\n\nLe chantier est fini, pas votre journée. Transmettez-nous votre chantier : Cercle Énergie vérifie l'éligibilité, monte le dossier et suit la prime.\n\n✅ Un seul interlocuteur, de l'éligibilité au suivi des primes\n✅ Dossiers vérifiés avant transmission\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=N1"}, {"id": "N2", "kind": "video", "file": "N2-qui-fait-quoi", "product": "AXE", "tag": "Liste animée", "title": "Dossier CEE : qui fait quoi ?", "sub": "Éligibilité, dossier, vérifications, suivi de la prime : « Nous ». Les travaux : « Vous ». Musique seule. 13 s.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=N2"}, {"id": "H01", "kind": "visuel", "product": "AXE", "tag": "21 h · Après le chantier", "title": "Encore vos dossiers CEE à 21 h ?", "sub": "L'artisan sur ses dossiers, le soir. L'accroche de l'axe.", "texte": "Encore vos dossiers CEE à 21 h ?\n\nLe chantier est fini, pas votre journée. Transmettez-nous votre chantier : Cercle Énergie vérifie l'éligibilité, monte le dossier et suit la prime.\n\n✅ Un seul interlocuteur, de l'éligibilité au suivi des primes\n✅ Dossiers vérifiés avant transmission\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H01"}, {"id": "H02", "kind": "visuel", "product": "AXE", "tag": "Installateurs · Artisans", "title": "Vous posez. On gère le dossier CEE.", "sub": "L'artisan photographie son chantier pour nous le transmettre.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H02"}, {"id": "H03", "kind": "visuel", "product": "AXE", "tag": "Dossiers CEE", "title": "Le dossier CEE, ce n'est pas votre métier.", "sub": "Les mains de l'artisan dans la paperasse.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H03"}, {"id": "H04", "kind": "visuel", "product": "AXE", "tag": "Fin de chantier", "title": "Rentrez chez vous. On s'occupe du dossier.", "sub": "Fin de journée, l'artisan ferme son utilitaire.", "texte": "Encore vos dossiers CEE à 21 h ?\n\nLe chantier est fini, pas votre journée. Transmettez-nous votre chantier : Cercle Énergie vérifie l'éligibilité, monte le dossier et suit la prime.\n\n✅ Un seul interlocuteur, de l'éligibilité au suivi des primes\n✅ Dossiers vérifiés avant transmission\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H04"}, {"id": "H05", "kind": "visuel", "product": "AXE", "tag": "Mandataire CEE", "title": "Un seul interlocuteur pour vos dossiers CEE.", "sub": "La conseillère qui vérifie le dossier.", "texte": "Vous réalisez les travaux, Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE.\n\nDe l'étude d'éligibilité à la constitution de vos dossiers, en passant par leur valorisation et le suivi des primes, nos équipes vous accompagnent à chaque étape.\n\n✅ Un seul interlocuteur pour tous vos dossiers CEE\n✅ Les meilleures conditions recherchées auprès de nos partenaires\n\n👉 Devenez partenaire : décrivez votre activité en 1 minute.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": true, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H05"}, {"id": "E1", "kind": "video", "file": "E1-le-lien", "product": "EXTRAIT", "tag": "Extrait du film", "title": "Le lien entre vos chantiers et le financement CEE.", "sub": "Le schéma Installateurs ↔ Cercle Énergie ↔ Délégataires, avec la voix off. 11 s.", "texte": "Vous réalisez les travaux, Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE.\n\nDe l'étude d'éligibilité à la constitution de vos dossiers, en passant par leur valorisation et le suivi des primes, nos équipes vous accompagnent à chaque étape.\n\n✅ Un seul interlocuteur pour tous vos dossiers CEE\n✅ Les meilleures conditions recherchées auprès de nos partenaires\n\n👉 Devenez partenaire : décrivez votre activité en 1 minute.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=E1"}, {"id": "E2", "kind": "video", "file": "E2-nos-terrains", "product": "EXTRAIT", "tag": "Extrait du film", "title": "PAC, chauffage, isolation, tertiaire, industrie, agricole.", "sub": "Les secteurs d'intervention, avec la voix off. 11 s.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=E2"}, {"id": "E3", "kind": "video", "file": "E3-cinq-services", "product": "EXTRAIT", "tag": "Extrait du film", "title": "De l'éligibilité au suivi des primes.", "sub": "Les cinq services, avec la voix off. 10 s.", "texte": "Vous réalisez les travaux, Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE.\n\nDe l'étude d'éligibilité à la constitution de vos dossiers, en passant par leur valorisation et le suivi des primes, nos équipes vous accompagnent à chaque étape.\n\n✅ Un seul interlocuteur pour tous vos dossiers CEE\n✅ Les meilleures conditions recherchées auprès de nos partenaires\n\n👉 Devenez partenaire : décrivez votre activité en 1 minute.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=E3"}, {"id": "E4", "kind": "video", "file": "E4-message", "product": "EXTRAIT", "tag": "Extrait du film", "title": "Vous réalisez les travaux. Nous gérons vos aides CEE.", "sub": "Le message clé, avec la voix off. 9 s.", "texte": "Vous réalisez les travaux, Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE.\n\nDe l'étude d'éligibilité à la constitution de vos dossiers, en passant par leur valorisation et le suivi des primes, nos équipes vous accompagnent à chaque étape.\n\n✅ Un seul interlocuteur pour tous vos dossiers CEE\n✅ Les meilleures conditions recherchées auprès de nos partenaires\n\n👉 Devenez partenaire : décrivez votre activité en 1 minute.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=E4"}, {"id": "V1", "kind": "video", "file": "V1-vos-dossiers-cee", "product": "MARQUE", "tag": "Vidéo de marque", "title": "Vos dossiers CEE, on s'en occupe.", "sub": "Cinq plans de chantier et de bureau, textes à l'écran, musique seule. 17 s.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=V1"}, {"id": "V2", "kind": "video", "file": "V2-moins-de-paperasse", "product": "MARQUE", "tag": "Vidéo de marque", "title": "Les CEE font gagner des chantiers. La paperasse vous les fait payer.", "sub": "Du problème à la solution, musique seule. 17 s.", "texte": "Encore vos dossiers CEE à 21 h ?\n\nLe chantier est fini, pas votre journée. Transmettez-nous votre chantier : Cercle Énergie vérifie l'éligibilité, monte le dossier et suit la prime.\n\n✅ Un seul interlocuteur, de l'éligibilité au suivi des primes\n✅ Dossiers vérifiés avant transmission\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=V2"}, {"id": "V3", "kind": "video", "file": "V3-tous-vos-terrains", "product": "MARQUE", "tag": "Vidéo de marque", "title": "Résidentiel, tertiaire, industrie, agricole.", "sub": "Les quatre terrains, musique seule. 17 s.", "texte": "Vous posez. On gère le dossier CEE.\n\nÉligibilité, pièces, vérifications, suivi de la prime : c'est notre métier, pas le vôtre. Mandataire CEE, nous travaillons avec des délégataires pour financer vos chantiers.\n\n✅ Pompes à chaleur, chauffage, isolation, rénovation énergétique\n✅ Résidentiel, tertiaire, industrie, agricole\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=V3"}, {"id": "H06", "kind": "visuel", "product": "MARQUE", "tag": "Aides CEE", "title": "Moins de paperasse. Plus de chantiers.", "sub": "Variante directe du bénéfice.", "texte": "Encore vos dossiers CEE à 21 h ?\n\nLe chantier est fini, pas votre journée. Transmettez-nous votre chantier : Cercle Énergie vérifie l'éligibilité, monte le dossier et suit la prime.\n\n✅ Un seul interlocuteur, de l'éligibilité au suivi des primes\n✅ Dossiers vérifiés avant transmission\n\n👉 Décrivez votre activité en 1 minute, un conseiller vous rappelle.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H06"}, {"id": "H07", "kind": "visuel", "product": "MARQUE", "tag": "Mandataire CEE", "title": "Vous réalisez les travaux. Nous gérons vos aides CEE.", "sub": "Le message clé de la marque.", "texte": "Vous réalisez les travaux, Cercle Énergie vous accompagne dans la gestion et le financement de vos aides CEE.\n\nDe l'étude d'éligibilité à la constitution de vos dossiers, en passant par leur valorisation et le suivi des primes, nos équipes vous accompagnent à chaque étape.\n\n✅ Un seul interlocuteur pour tous vos dossiers CEE\n✅ Les meilleures conditions recherchées auprès de nos partenaires\n\n👉 Devenez partenaire : décrivez votre activité en 1 minute.\n\nVersement des primes sous réserve de validation du dossier.", "temoignage": false, "reel": false, "badge": false, "serie2": false, "titre_meta": "Vos dossiers CEE, on s'en occupe", "lien": "https://cercle-energie.vercel.app/devenir-partenaire?utm_source=facebook&utm_medium=cpc&utm_campaign=cercle-energie-partenaires&utm_content=H07"}];
+const ST = { valide: "Validé", modifier: "À modifier", refuse: "Refusé" };
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let reviews = {};
+const who = $("#who"); try { who.value = localStorage.getItem("ce_who") || ""; } catch (e) {}
+who.addEventListener("change", () => { try { localStorage.setItem("ce_who", who.value.trim()); } catch (e) {} });
+function toast(t) { const el = $("#toast"); el.textContent = t; el.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => (el.style.display = "none"), 2200); }
+function lastStatus(id) { const l = (reviews[id] || []).filter((r) => r.status); return l.length ? l[l.length - 1].status : ""; }
+
+function card(it) {
+  const el = document.createElement("article"); el.className = "card"; el.id = it.id;
+  el.dataset.product = it.product; el.dataset.kind = it.kind; el.dataset.temo = it.temoignage ? 1 : 0; el.dataset.reel = it.reel ? 1 : 0; el.dataset.serie2 = it.serie2 ? 1 : 0;
+  const media = it.kind === "visuel"
+    ? `<div class="media" data-zoom><span class="code">${it.id}</span><img loading="lazy" src="/thumb/${it.id}-4x5.jpg?v=2" data-fmt="4x5" alt="${esc(it.title)}"></div>
+       <div class="fmts"><button data-f="1x1">1:1</button><button data-f="4x5" class="on">4:5</button><button data-f="9x16">9:16</button><a href="/img/${it.id}-4x5.jpg?v=2" target="_blank" data-dl>HD ↗</a></div>`
+    : `<div class="media" style="aspect-ratio:9/16;cursor:auto"><span class="code">${it.id}</span><video controls playsinline preload="none" poster="/thumb/${it.file}.jpg?v=2" src="/vid/${it.file}.mp4?v=2"></video></div>`;
+  el.innerHTML = `${media}<div class="body">
+    <div class="chips">${it.serie2 ? '<span class="chip" style="background:#0E5A38;color:#fff">★ Axe 21 h</span>' : ""}<span class="chip p">${({AXE:"Installateurs",EXTRAIT:"Extrait du film",MARQUE:"Marque"})[it.product] || it.product}</span><span class="chip">${esc(it.tag)}</span>${it.kind === "video" ? '<span class="chip t">Vidéo</span>' : ""}</div>
+    <h4>${esc(it.title)}</h4><div class="sub">${esc(it.sub)}</div>
+    <details class="txt"><summary>📝 Texte de la pub Meta</summary><pre>${esc(it.texte)}</pre>
+      <div style="margin-top:6px"><b>Titre :</b> ${esc(it.titre_meta)}</div>
+      <div class="row"><button data-copy="texte">Copier le texte</button><button data-copy="lien">Copier le lien</button></div></details>
+    <div class="dec"><button class="v" data-s="valide">✔ Validé</button><button class="m" data-s="modifier">✎ À modifier</button><button class="r" data-s="refuse">✕ Refusé</button></div>
+    <textarea placeholder="Votre commentaire (facultatif)"></textarea>
+    <div class="send"><button class="btn">Envoyer</button><span class="msg"></span></div>
+    <div class="hist"></div></div>`;
+  let chosen = "";
+  el.querySelectorAll(".dec button").forEach((b) => b.addEventListener("click", () => { chosen = chosen === b.dataset.s ? "" : b.dataset.s; el.querySelectorAll(".dec button").forEach((x) => x.classList.toggle("on", x.dataset.s === chosen)); }));
+  el.querySelectorAll(".fmts button").forEach((b) => b.addEventListener("click", () => {
+    el.querySelectorAll(".fmts button").forEach((x) => x.classList.toggle("on", x === b));
+    const img = $("img", el); img.src = `/thumb/${it.id}-${b.dataset.f}.jpg?v=2`; img.dataset.fmt = b.dataset.f;
+    $(".media", el).style.aspectRatio = { "1x1": "1/1", "4x5": "4/5", "9x16": "9/16" }[b.dataset.f];
+    $("[data-dl]", el).href = `/img/${it.id}-${b.dataset.f}.jpg?v=2`;
+  }));
+  const z = $("[data-zoom]", el); if (z) z.addEventListener("click", () => { const f = $("img", el).dataset.fmt; $("#lb img").src = `/img/${it.id}-${f}.jpg?v=2`; $("#lb").classList.add("on"); });
+  el.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", () => { navigator.clipboard.writeText(it[b.dataset.copy]).then(() => toast("Copié")); }));
+  $(".send .btn", el).addEventListener("click", async () => {
+    const author = who.value.trim(), text = $("textarea", el).value.trim(), msg = $(".send .msg", el);
+    if (!author) { who.focus(); return toast("Indiquez votre nom en haut de page"); }
+    if (!chosen && !text) return toast("Choisissez une décision ou écrivez un commentaire");
+    msg.textContent = "Envoi…";
+    try {
+      const r = await fetch("/api/reviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ item: it.id, author, status: chosen, text }) });
+      const j = await r.json(); if (!r.ok) throw new Error(j.error || "erreur");
+      (reviews[it.id] = reviews[it.id] || []).push(j.entry); $("textarea", el).value = ""; msg.textContent = "Envoyé ✓"; paint(it.id); counts();
+    } catch (e) { msg.textContent = "Échec : " + e.message; }
+  });
+  return el;
+}
+function paint(id) {
+  const el = document.getElementById(id); const l = reviews[id] || [];
+  $(".hist", el).innerHTML = l.map((r) => `<div>${r.status ? `<span class="tag-st" style="background:${r.status === "valide" ? "var(--oks)" : r.status === "modifier" ? "var(--was)" : "var(--kos)"}">${ST[r.status]}</span>` : ""}<b>${esc(r.author)}</b> · ${new Date(r.ts).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}${r.text ? " : " + esc(r.text) : ""}</div>`).join("");
+  const s = lastStatus(id); el.classList.remove("st-valide", "st-modifier", "st-refuse"); if (s) el.classList.add("st-" + s);
+}
+function counts() { $("#done").textContent = ITEMS.filter((i) => lastStatus(i.id)).length; $("#tot").textContent = ITEMS.length; }
+const grid = $("#grid"); ITEMS.forEach((it) => grid.appendChild(card(it))); counts();
+fetch("/api/reviews").then((r) => r.json()).then((j) => { reviews = j.items || {}; ITEMS.forEach((i) => paint(i.id)); counts(); }).catch(() => {});
+$("#filters").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll("#filters button").forEach((x) => x.classList.toggle("on", x === b));
+  const f = b.dataset.f;
+  document.querySelectorAll(".card").forEach((c) => { c.style.display = (f === "all" || c.dataset.product === f || c.dataset.kind === f || (f === "temo" && c.dataset.temo === "1") || (f === "reel" && c.dataset.reel === "1") || (f === "serie2" && c.dataset.serie2 === "1") || (f === "todo" && !lastStatus(c.id))) ? "" : "none"; });
+});
+$("#lb").addEventListener("click", () => $("#lb").classList.remove("on"));
+$("#copy").addEventListener("click", () => {
+  const lines = ["Compte-rendu de la sélection des créas Cercle Énergie", ""];
+  ["valide", "modifier", "refuse", ""].forEach((s) => {
+    const l = ITEMS.filter((i) => lastStatus(i.id) === s); if (!l.length) return;
+    lines.push((s ? ST[s] : "Pas encore décidé") + " (" + l.length + ")");
+    l.forEach((i) => { const c = (reviews[i.id] || []).filter((r) => r.text).map((r) => r.author + " : " + r.text).join(" | "); lines.push("- " + i.id + " " + i.title + (c ? " — " + c : "")); });
+    lines.push("");
+  });
+  navigator.clipboard.writeText(lines.join("\n")).then(() => toast("Compte-rendu copié"));
+});
+</script>
+</body>
+</html>
