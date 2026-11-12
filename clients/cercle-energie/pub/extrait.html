@@ -20,4 +20,9 @@ h1{font-weight:800;line-height:1.05;letter-spacing:-.015em;margin-top:20px}h1 em
 <div class="bot" id="bot"><div class="cta" id="c"></div><div class="sub" id="s"></div></div>
 <script>const q=new URLSearchParams(location.search),H=innerHeight,st=H>1500;const vy=+q.get('vy');
 logo.style.top=(st?270:40)+'px';if(!st){logo.style.padding='12px 20px 9px';logo.querySelector('img').style.width='170px'}tp.style.top=(st?480:228)+'px';h.style.fontSize=(st?76:54)+'px';k.textContent=q.get('k');h.innerHTML=q.get('h');
-hole.style.top=vy+'px';bot.style.top=(vy+608+(st?70:44))+'px';c.textContent=q.get('c')+' →';c.style.fontSize=(st?40:32)+'px';if(!st)c.style.padding='20px 40px';s.textContent=q.get('s');s.style.fontSize=(st?30:24)+'px'</script></body></html>
+hole.style.top=vy+'px';bot.style.top=(vy+608+(st?70:44))+'px';c.textContent=q.get('c')+' →';c.style.fontSize=(st?40:32)+'px';if(!st)c.style.padding='20px 40px';s.textContent=q.get('s');s.style.fontSize=(st?30:24)+'px';
+document.fonts.ready.then(()=>{const maxW=tp.clientWidth,maxB=vy-(st?44:26);let f=st?76:54;h.style.whiteSpace='nowrap';
+ while(f>(st?50:38)&&h.scrollWidth>maxW){f-=1;h.style.fontSize=f+'px'}
+ if(h.scrollWidth>maxW){h.style.whiteSpace='normal'}
+ while(f>30&&tp.getBoundingClientRect().bottom>maxB){f-=1;h.style.fontSize=f+'px'}
+ document.body.dataset.ok=(tp.getBoundingClientRect().bottom<=maxB&&h.scrollWidth<=maxW+1)?'1':'0';document.title='fit:'+document.body.dataset.ok+':'+f})</script></body></html>
