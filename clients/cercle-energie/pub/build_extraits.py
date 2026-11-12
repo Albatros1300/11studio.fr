@@ -12,6 +12,11 @@ for name, a, b, k, h in EX:
     for fmt, (H, vy) in FORMATS.items():
         q = urllib.parse.urlencode({"vy": vy, "k": k, "h": h, "c": "Devenir partenaire", "s": "* Sous réserve de validation du dossier." if "*" in h else "Cercle Énergie · Le partenaire unique de vos projets"})
         jobs.append({"H": H, "url": "file://" + os.path.join(HERE, "extrait.html") + "?" + q, "out": os.path.join(HERE, "work", f"{name}-{fmt}.png")})
+os.makedirs(os.path.join(HERE, "work"), exist_ok=True)
+open(os.path.join(HERE, "work", "r.js"), "w").write("""const { chromium } = require('playwright');
+(async () => { const jobs = JSON.parse(process.argv[2]); const b = await chromium.launch();
+ for (const j of jobs) { const p = await b.newPage({ viewport: { width: 1080, height: j.H } }); await p.goto(j.url); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(150); await p.screenshot({ path: j.out, omitBackground: true }); await p.close(); }
+ await b.close(); })();""")
 subprocess.run(["node", os.path.join(HERE, "work", "r.js"), json.dumps(jobs)], check=True)
 for name, a, b, k, h in EX:
     for fmt, (H, vy) in FORMATS.items():
