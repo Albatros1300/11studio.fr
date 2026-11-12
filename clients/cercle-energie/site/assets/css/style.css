@@ -470,3 +470,19 @@ section[id]{scroll-margin-top:96px}
 @media (max-width:980px){.linkcards{grid-template-columns:1fr 1fr}.cols3,.contact-grid{grid-template-columns:1fr}.page-hero.ph{min-height:auto;padding-top:150px}}
 @media (max-width:600px){.linkcards{grid-template-columns:1fr}.lc{aspect-ratio:16/11}}
 .page-hero.ph .shade{background:linear-gradient(100deg,rgba(7,38,75,.95) 0%,rgba(7,38,75,.72) 42%,rgba(7,38,75,.12) 100%),linear-gradient(to top,rgba(7,38,75,.8),transparent 45%)}
+
+/* ---------- V5 : réseau d'accompagnement ---------- */
+.linkcards.six{grid-template-columns:repeat(3,1fr)}
+.linkcards.six .lc{aspect-ratio:4/3.6}
+.lc .vn{display:inline-block;font-family:var(--display);font-weight:800;font-size:.85rem;letter-spacing:.12em;color:var(--lime);margin-bottom:8px}
+#accompagnement .lead{margin-top:18px;max-width:52ch}
+.nav{gap:22px}.nav a:not(.btn){font-size:.92rem}
+@media (max-width:1180px){.nav{gap:16px}.nav a:not(.btn){font-size:.86rem}}
+@media (max-width:980px){.linkcards.six{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.linkcards.six{grid-template-columns:1fr}.linkcards.six .lc{aspect-ratio:16/11}}
+.foot{grid-template-columns:1.3fr 1fr .8fr .9fr}
+@media (max-width:980px){.foot{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.foot{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.hero2 .ln>span,.hero2 .hero2-foot,.hero2 .eyebrow,.page-hero *{opacity:1!important;transform:none!important}}
+.linkcards.six .lc:after{background:linear-gradient(to top,rgba(7,38,75,.97) 34%,rgba(7,38,75,.45) 72%,rgba(7,38,75,.25))}
+@media (max-width:600px){.linkcards.six .lc{aspect-ratio:4/3.5}}
