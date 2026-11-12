@@ -1,0 +1,31 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>
+@font-face{font-family:M;font-weight:700;src:url(../site/assets/fonts/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(../site/assets/fonts/montserrat-latin-800-normal.woff2)}
+*{box-sizing:border-box;margin:0}html,body{width:100%;height:100%;overflow:hidden;font-family:M,sans-serif;color:#fff;background:transparent}
+.logo{position:absolute;left:54px;background:#fff;border-radius:26px;padding:16px 26px 12px;box-shadow:0 14px 40px rgba(0,0,0,.4)}.logo img{width:210px;display:block}
+.cap{position:absolute;left:54px;right:54px;text-align:center}
+.cap span{display:inline;background:#07264B;color:#fff;font-weight:800;line-height:1.5;padding:10px 22px;border-radius:16px;box-decoration-break:clone;-webkit-box-decoration-break:clone;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.cap em{font-style:normal;color:#B9E35A}
+.hook{position:absolute;left:0;right:0;text-align:center;font-weight:800;letter-spacing:-.04em;color:#fff;text-shadow:0 10px 50px rgba(0,0,0,.7)}
+.hook small{display:block;font-size:.2em;letter-spacing:.2em;text-transform:uppercase;color:#B9E35A;margin-top:-.1em;text-shadow:0 4px 20px rgba(0,0,0,.8)}
+.dim{position:absolute;inset:0;background:rgba(7,38,75,.72)}
+.list{position:absolute;left:70px;right:70px}
+.list h2{font-weight:800;line-height:1.05;letter-spacing:-.02em}.list h2 em{font-style:normal;color:#B9E35A}
+.row{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid rgba(255,255,255,.18);font-weight:800}
+.row b{font-weight:800;padding:.18em .7em;border-radius:99px}
+.row .n{background:#73AF01;color:#fff}.row .v{background:#fff;color:#07264B}
+.end{position:absolute;inset:0;background:linear-gradient(165deg,#07264B,#0B3566 60%,#0E4C8A);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 70px}
+.end .lg{background:#fff;border-radius:40px;padding:34px 50px 26px;box-shadow:0 24px 70px rgba(0,0,0,.4)}.end .lg img{width:520px;display:block}
+.end h2{font-weight:800;line-height:1.06;letter-spacing:-.02em;margin-top:70px}.end h2 em{font-style:normal;color:#B9E35A}
+.cta{display:inline-flex;margin-top:56px;background:linear-gradient(95deg,#73AF01,#4E8A06);font-weight:800;padding:30px 60px;border-radius:99px;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.fine{margin-top:40px;font-weight:700;color:#B9CCE4}
+.ring{position:absolute;right:-240px;top:-260px;width:720px;height:720px;border-radius:50%;border:66px solid rgba(185,227,90,.16)}
+</style></head><body><script>
+const q=new URLSearchParams(location.search),H=innerHeight,st=H>1500,m=q.get('m');const B=document.body;const add=h=>B.insertAdjacentHTML('beforeend',h);
+if(q.get('dim'))add('<div class="dim"></div>');
+if(m!=='end')add(`<div class="logo" style="top:${st?270:44}px"><img src="../site/assets/img/logo_mark_t.png"></div>`);
+if(m==='cap')add(`<div class="cap" style="bottom:${st?430:110}px;font-size:${st?58:42}px"><span>${q.get('t')}</span></div>`);
+if(m==='hook')add(`<div class="hook" style="top:${st?560:330}px;font-size:${st?300:240}px">${q.get('t')}<small>${q.get('s')||''}</small></div>`);
+if(m==='list'){const rows=JSON.parse(q.get('rows')),n=+q.get('n');add(`<div class="list" style="top:${st?520:250}px"><h2 style="font-size:${st?86:66}px">${q.get('t')}</h2><div style="margin-top:${st?50:30}px">${rows.map((r,i)=>`<div class="row" style="font-size:${st?50:40}px;padding:${st?30:20}px 0;opacity:${i<n?1:0}"><span>${r[0]}</span><b class="${r[1]==='Vous'?'v':'n'}">${r[1]}</b></div>`).join('')}</div></div>`)}
+if(m==='end')add(`<div class="end"><div class="ring"></div><div class="lg"><img src="../site/assets/img/logo_full_t.png"></div><h2 style="font-size:${st?84:66}px">${q.get('t')}</h2><div class="cta" style="font-size:${st?46:38}px">${q.get('c')} →</div><div class="fine" style="font-size:${st?28:24}px">${q.get('s')||''}</div></div>`);
+</script></body></html>
