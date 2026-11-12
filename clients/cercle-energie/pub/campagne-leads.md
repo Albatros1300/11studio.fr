@@ -1,5 +1,11 @@
 # Campagne de recrutement d'installateurs — Cercle Énergie
 
+> **Mise à jour (réunion client).** Cercle Énergie se présente désormais comme un **réseau d'accompagnement des artisans RGE** : dossiers CEE, démarches administratives, formation aux CEE, qualification RGE, tarifs préférentiels auprès de fournisseurs partenaires. Message du dirigeant : le petit artisan fait des chantiers de qualité mais galère sur ses dossiers ; jouer une image locale.
+>
+> Nouvelles créations : visuels `R01` à `R07` (réseau, par cible : petit artisan, pompe à chaleur, qualifié RGE), `L01` à `L03` (artisan local) ; vidéos `R1` à `R4` (script `build_reseau.py`). Textes D, E, F et correspondances : voir `../validation/build.py`. Appel à l'action unique : « Rejoindre le réseau ». Aucune marque de fabricant n'est citée ni montrée.
+>
+> Les créations de l'axe « 21 h » ci-dessous restent valables en complément.
+
 Objectif : obtenir des demandes de partenariat d'installateurs et d'entreprises du bâtiment.
 **Rien n'est lancé.** Tout est prêt à être chargé dans le gestionnaire de publicités Meta.
 

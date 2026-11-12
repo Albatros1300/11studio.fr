@@ -1,0 +1,16 @@
+[
+ {"i": "A", "txt": "Vous êtes artisan.", "f": "vo.mp3", "src0": 0.0, "src1": 1.33, "sp": 0.0, "t": 1.0},
+ {"i": "B", "txt": "Votre métier, c'est le chantier.", "f": "vo.mp3", "src0": 1.33, "src1": 3.53, "sp": 1.58, "t": 3.6},
+ {"i": "C", "txt": "Pas les dossiers, pas les démarches, pas les négociations avec les fournisseurs.", "f": "vo.mp3", "src0": 3.53, "src1": 8.0, "sp": 3.79, "t": 6.9},
+ {"i": "D", "txt": "Cercle Énergie est un réseau d'accompagnement pour les artisans RGE.", "f": "vo_d.mp3", "src0": 0.0, "src1": 4.2, "sp": 0.0, "t": 12.2},
+ {"i": "E", "txt": "Mandataire CEE, nous faisons le lien entre vous et les délégataires qui financent les primes.", "f": "vo_e.mp3", "src0": 0.0, "src1": 5.65, "sp": 0.0, "t": 18.9},
+ {"i": "F", "txt": "Concrètement : nous montons et suivons vos dossiers CEE.", "f": "vo.mp3", "src0": 17.8, "src1": 21.66, "sp": 18.02, "t": 26.6},
+ {"i": "G", "txt": "Nous vous épaulons dans vos démarches administratives.", "f": "vo.mp3", "src0": 21.66, "src1": 24.45, "sp": 21.89, "t": 31.3},
+ {"i": "H", "txt": "Nous vous formons au fonctionnement des primes.", "f": "vo.mp3", "src0": 24.45, "src1": 26.92, "sp": 24.71, "t": 34.9},
+ {"i": "I", "txt": "Nous vous accompagnons vers la qualification RGE.", "f": "vo.mp3", "src0": 26.92, "src1": 30.08, "sp": 27.14, "t": 38.3},
+ {"i": "J", "txt": "Et nous vous ouvrons des tarifs préférentiels auprès de fournisseurs partenaires.", "f": "vo.mp3", "src0": 30.08, "src1": 34.05, "sp": 30.26, "t": 42.3},
+ {"i": "K", "txt": "Ce que vous n'arrivez pas à faire seul, nous vous aidons à le faire.", "f": "vo.mp3", "src0": 34.05, "src1": 37.65, "sp": 34.33, "t": 47.4},
+ {"i": "L", "txt": "Cercle Énergie.", "f": "vo.mp3", "src0": 37.65, "src1": 38.94, "sp": 37.95, "t": 52.3},
+ {"i": "M", "txt": "Le partenaire unique de vos projets.", "f": "vo.mp3", "src0": 38.94, "src1": 41.12, "sp": 39.14, "t": 53.9},
+ {"i": "N", "txt": "Rejoignez le réseau.", "f": "vo.mp3", "src0": 41.12, "src1": 42.68, "sp": 41.34, "t": 56.7}
+]

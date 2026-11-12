@@ -210,7 +210,7 @@ P["index.html"] = ("Cercle Énergie — Le réseau d’accompagnement des artisa
 <section class="statement" id="constat">
   <div class="wrap split">
     <div><span class="eyebrow rv">Le constat</span>
-      <p class="fill" data-fill data-green="9">Seul, un petit artisan passe ses soirées sur l’administratif. En réseau, il retrouve du temps pour ses chantiers et ses clients.</p></div>
+      <p class="fill" data-fill data-green="15">Vous faites des chantiers de qualité. Mais seul, vous passez vos soirées sur les dossiers. En réseau, vous retrouvez du temps pour vos clients.</p></div>
     <div class="media rv"><img src="assets/img/paperasse.jpg" alt="Artisan débordé par les démarches administratives" loading="lazy"><span class="badge">Ce que vous n’arrivez pas à faire seul, on vous aide à le faire.</span></div>
   </div>
 </section>
@@ -400,7 +400,7 @@ P["a-propos.html"] = ("À propos — Cercle Énergie",
       <span class="eyebrow rv">Qui sommes-nous</span>
       <h2 class="rv">Un réseau au service des petits artisans.</h2>
       <p class="lead rv">En qualité de mandataire, nous travaillons en collaboration avec des délégataires CEE afin d’accompagner les professionnels dans le financement de leurs projets de rénovation et d’efficacité énergétique.</p>
-      <p class="rv" style="margin-top:18px">Notre rôle ne s’arrête pas au dossier : démarches administratives, formation, qualification RGE, tarifs fournisseurs. Nous aidons les artisans sur ce qu’ils n’arrivent pas à faire seuls.</p>
+      <p class="rv" style="margin-top:18px">Notre rôle ne s’arrête pas au dossier : démarches administratives, formation, qualification RGE, tarifs fournisseurs. Nous aidons les artisans locaux, ceux qui font du travail de qualité, sur ce qu’ils n’arrivent pas à faire seuls.</p>
     </div>
     <div class="media rv"><img src="assets/img/remise-dossier.jpg" alt="Une conseillère remet un dossier à un artisan" loading="lazy"><span class="badge">Ce que vous n’arrivez pas à faire seul, on vous aide à le faire.</span></div>
   </div>
@@ -497,7 +497,7 @@ P["accompagnement.html"] = ("L’accompagnement — Le réseau Cercle Énergie",
     <span class="eyebrow rv">Pour qui</span><h2 class="rv">Le réseau est fait pour vous si…</h2>
     <div class="cols3">
       <div class="box rv"><span class="n">01</span><h3>Vous posez des pompes à chaleur</h3><p>Vos chantiers sont éligibles aux primes, et les dossiers vous prennent trop de temps.</p></div>
-      <div class="box rv"><span class="n">02</span><h3>Vous êtes un petit artisan</h3><p>Seul ou à quelques-uns, sans personne pour l’administratif ni pour négocier vos achats.</p></div>
+      <div class="box rv"><span class="n">02</span><h3>Vous êtes un artisan local</h3><p>Vos chantiers sont soignés, vos clients vous recommandent. Mais seul ou à quelques-uns, les dossiers vous freinent.</p></div>
       <div class="box rv"><span class="n">03</span><h3>Vous êtes qualifié RGE</h3><p>Ou vous préparez votre qualification, et vous voulez en tirer parti sur vos chantiers.</p></div>
     </div>
   </div>
