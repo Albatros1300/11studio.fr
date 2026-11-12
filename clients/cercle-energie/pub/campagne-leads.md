@@ -1,13 +1,12 @@
 # Campagne de recrutement d'installateurs — Cercle Énergie
 
-> **Mise à jour (réunion client).** Cercle Énergie se présente désormais comme un **réseau d'accompagnement des artisans RGE** : dossiers CEE, démarches administratives, formation aux CEE, qualification RGE, tarifs préférentiels auprès de fournisseurs partenaires. Message du dirigeant : le petit artisan fait des chantiers de qualité mais galère sur ses dossiers ; jouer une image locale.
+> **Mise à jour : brief de marque du client (novembre 2026).** Toutes les créations ont été refaites sur ce brief. Cible : installateurs de pompes à chaleur, de chauffe-eau thermodynamiques et d'isolation. Promesse : du premier contact au versement de la prime. Appel à l'action unique : « Parlons de vos projets ».
 >
-> Nouvelles créations : visuels `R01` à `R07` (réseau, par cible : petit artisan, pompe à chaleur, qualifié RGE), `L01` à `L03` (artisan local) ; vidéos `R1` à `R4` (script `build_reseau.py`). Textes D, E, F et correspondances : voir `../validation/build.py`. Appel à l'action unique : « Rejoindre le réseau ». Aucune marque de fabricant n'est citée ni montrée.
+> Créations en cours : visuels `C01` à `C07` (accroches de la section 7 du brief et déclinaisons métier), `L01` à `L03` (artisan local, angle du dirigeant), `H01` et `H06` (axe « 21 h ») ; vidéos `C1` à `C4` (script `build_cercle.py`) et `N1`. Textes des annonces et correspondances : `../validation/build.py`.
 >
-> Les créations de l'axe « 21 h » ci-dessous restent valables en complément.
-
-Objectif : obtenir des demandes de partenariat d'installateurs et d'entreprises du bâtiment.
-**Rien n'est lancé.** Tout est prêt à être chargé dans le gestionnaire de publicités Meta.
+> Règles tirées du brief : aucune prime garantie, aucun délai chiffré, mention « selon les conditions contractuelles et la validation des dossiers » ; Hitachi, Thomson et WOLTIC ni cités ni montrés en publicité tant que les accords et droits d'usage ne sont pas confirmés ; pas d'annonce d'apport de chantiers ni de conditions tarifaires.
+>
+> Les sections ci-dessous décrivent la première campagne (axe « 21 h ») et restent comme référence de recherche ; ses créations retirées ne sont plus proposées.
 
 ## 1. Ce que dit la recherche
 

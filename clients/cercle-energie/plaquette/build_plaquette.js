@@ -1,4 +1,4 @@
-// Plaquette Cercle Énergie — version « agence »
+// Présentation commerciale Cercle Énergie — alignée sur le brief de marque client (novembre 2026)
 // Usage : NODE_PATH=<node_modules avec pptxgenjs, sharp, react, react-dom, react-icons> node build_plaquette.js
 //
 // RÈGLE IMAGES : jamais de `sizing` pptxgenjs (PowerPoint l'affiche étiré).
@@ -28,7 +28,7 @@ const NB = ' '; // espace insécable
 
 const p = new pptxgen();
 p.layout = 'LAYOUT_WIDE';
-p.title = 'Cercle Énergie — Plaquette de présentation';
+p.title = 'Cercle Énergie — Présentation commerciale';
 p.company = 'Cercle Énergie';
 p.author = 'Cercle Énergie';
 p.theme = { headFontFace: F, bodyFontFace: F };
@@ -146,33 +146,58 @@ const estH = (text, pt, w, bold, lsm) => {
   }, 0);
   return n * (pt / 72) * 1.22 * (lsm || 1) + 0.04;
 };
-const NOTE = '* Sous réserve de validation du dossier.';
+const NOTE = '* Selon les conditions contractuelles et la validation des dossiers.';
+const NOTE2 = '* Selon les conditions contractuelles\net la validation des dossiers.';
+// « 6e » avec e en exposant
+const sixieme = (before, after, o) => [{ text: before + '6', options: o || {} }, { text: 'e', options: Object.assign({ superscript: true }, o || {}) }, { text: after, options: o || {} }];
+
+// Pastilles en flux (retour à la ligne automatique). Retourne le y de fin.
+const chips = (s, items, x, y, maxW, st) => {
+  const pt = st.pt || 12, h = st.h || 0.5, gap = 0.14;
+  let cx = x, cy = y;
+  items.forEach((t) => {
+    const w = t.length * (pt / 72) * 0.56 + 0.52;
+    if (cx > x && cx + w > x + maxW) { cx = x; cy += h + gap; }
+    rrect(s, cx, cy, w, h, st.fill, h / 2, st.line ? { line: st.line } : {});
+    T(s, t, { x: cx, y: cy, w, h, fontSize: pt, bold: true, align: 'center', valign: 'middle', color: st.color });
+    cx += w + gap;
+  });
+  return cy + h;
+};
 
 // Diapositive « volet » : photo paysage bord à bord d'un côté, texte de l'autre.
 // La photo est pré-recadrée au ratio exact de sa boîte (7,6 × 6,1 po).
-async function volet(idx, side, dark, photo, focal, titleLines, lead, items, note) {
+async function feature(o) {
+  const { side, dark, photo, focal, ic, kick, titleLines, lead, items = [], note, leadPt = 14.5, tag } = o;
   const s = newSlide(); s.background = { color: dark ? C.navyD : C.mist };
   const pw = 7.6, ph = 6.1, py = (H - ph) / 2, R = 0.24;
   const px = side === 'R' ? W - pw : 0;
   await pic(s, photo, px, py, pw, ph, Object.assign({}, focal, { r: side === 'R' ? [R, 0, 0, R] : [0, R, R, 0], bg: dark ? C.navyD : C.mist }));
   const tx = side === 'R' ? M : pw + 0.6, tw = W - pw - M - 0.6;
   const fg = dark ? C.white : C.navy, sub = dark ? C.pale : C.grey;
-  // mesure du bloc pour le centrer verticalement sur la hauteur de la photo
-  const tH = titleLines.length * (28 / 72) * 1.18 + 0.05;
-  const lH = estH(lead, 14.5, tw, false, 1.25);
+  const TP = 26;
+  const tH = titleLines.length * (TP / 72) * 1.18 + 0.05;
+  const lH = estH(lead, leadPt, tw, false, 1.25);
   const iMax = Math.max(0.44, ...items.map((t) => estH(t, 14, tw - 0.62, true, 1.1)));
   const iH = items.map(() => iMax);
   const nH = note ? 0.5 : 0;
-  const total = 0.62 + 0.38 + tH + 0.28 + lH + 0.42 + iH.reduce((a, b) => a + b + 0.16, 0) - 0.16 + nH;
+  const itemsH = items.length ? 0.42 + iH.reduce((a, b) => a + b + 0.16, 0) - 0.16 : 0;
+  const tagH = tag ? 0.42 + 0.54 : 0;
+  const total = 0.62 + 0.38 + tH + 0.28 + lH + itemsH + nH + tagH;
   let y = py + Math.max(0.15, (ph - total) / 2);
   disc(s, tx, y, 0.62, C.green);
-  T(s, '0' + idx, { x: tx, y, w: 0.62, h: 0.62, fontSize: 17, bold: true, align: 'center', valign: 'middle' });
-  T(s, `VOLET ${idx} SUR 6`, { x: tx + 0.82, y, w: tw - 0.82, h: 0.62, fontSize: 12, bold: true, charSpacing: 4, valign: 'middle', color: dark ? C.lime : C.greenD });
+  await ico(s, ic, 'FFFFFF', tx + 0.18, y + 0.18, 0.26);
+  T(s, kick.toUpperCase(), { x: tx + 0.82, y, w: tw - 0.82, h: 0.62, fontSize: 12, bold: true, charSpacing: 4, valign: 'middle', color: dark ? C.lime : C.greenD });
   y += 0.62 + 0.38;
-  T(s, titleLines.map((t, i) => ({ text: t, options: { breakLine: i < titleLines.length - 1 } })), { x: tx, y, w: tw + 0.2, h: tH, fontSize: 28, bold: true, color: fg, lineSpacingMultiple: 0.98 });
+  T(s, titleLines.map((t, i) => ({ text: t.t || t, options: { breakLine: i < titleLines.length - 1, color: t.c || fg } })), { x: tx, y, w: tw + 0.2, h: tH, fontSize: TP, bold: true, color: fg, lineSpacingMultiple: 0.98 });
   y += tH + 0.28;
-  T(s, lead, { x: tx, y, w: tw, h: lH, fontSize: 14.5, color: sub, lineSpacingMultiple: 1.25 });
+  T(s, lead, { x: tx, y, w: tw, h: lH, fontSize: leadPt, color: sub, lineSpacingMultiple: 1.25 });
   y += lH + 0.42;
+  if (tag) {
+    const w = tag.length * (12 / 72) * 0.6 + 0.6;
+    rrect(s, tx, y, w, 0.54, dark ? C.navyL : C.white, 0.27, { line: { color: C.lime, width: 1.5 } });
+    T(s, tag, { x: tx, y, w, h: 0.54, fontSize: 12, bold: true, align: 'center', valign: 'middle', color: fg });
+  }
   for (let i = 0; i < items.length; i++) {
     const dy = y + (iH[i] - 0.4) / 2;
     disc(s, tx, dy, 0.4, dark ? C.lime : C.green);
@@ -180,7 +205,43 @@ async function volet(idx, side, dark, photo, focal, titleLines, lead, items, not
     T(s, items[i], { x: tx + 0.62, y, w: tw - 0.62, h: iH[i], fontSize: 14, bold: true, color: fg, valign: 'middle', lineSpacingMultiple: 1.1 });
     y += iH[i] + 0.16;
   }
-  if (note) T(s, note, { x: tx, y: y + 0.12, w: tw, h: 0.24, fontSize: 10.5, color: sub });
+  if (note) T(s, note, { x: tx, y: y + 0.12, w: tw, h: 0.4, fontSize: 10.5, color: sub, lineSpacingMultiple: 1.1 });
+  pno(s);
+}
+
+// Les huit étapes du parcours (section 4 du brief client).
+const STEPS = [
+  ['FaBullseye', 'Opportunité', 'Vous aider à accéder à des projets qualifiés et à mieux organiser la prise de contact avec vos prospects.'],
+  ['FaSearch', 'Qualification du projet', 'Comprendre le besoin du client, le logement, l’équipement envisagé et les conditions d’éligibilité.'],
+  ['FaClipboardList', 'Visite technique', 'Structurer les relevés et fiabiliser les informations recueillies sur place. Logiciel utilisé pour la visite : WOLTIC.'],
+  ['FaBoxOpen', 'Choix des équipements', 'Vous donner accès à des équipements de qualité, notamment via des marques telles que Hitachi ou Thomson, selon les accords et gammes disponibles.'],
+  ['FaFileInvoice', 'Devis et financement', 'Vous aider à présenter un projet lisible, à identifier les aides mobilisables et à expliquer le reste à charge.'],
+  ['FaHardHat', 'Chantier et justificatifs', 'Accompagner la collecte des documents, les points de conformité et la traçabilité du dossier.'],
+  ['FaTasks', 'Montage et suivi CEE', 'Préparer, contrôler et suivre vos dossiers, avec une visibilité sur leur état d’avancement.'],
+  ['FaCheckCircle', 'Versement de la prime', 'Accompagner le suivi jusqu’au paiement, selon les conditions contractuelles et la validation des dossiers.'],
+];
+async function parcours(from, subtitle, withNote) {
+  const s = newSlide(); s.background = { color: C.navyD };
+  kicker(s, `Le parcours de A à Z · étapes ${from + 1} à ${from + 4}`, M, 0.65);
+  title(s, [{ text: 'Le parcours de A à Z, ' }, { text: 'en huit étapes.', options: { color: C.lime } }]);
+  T(s, subtitle, { x: M, y: 1.72, w: CW, h: 0.34, fontSize: 16, color: C.pale });
+  // repère de progression : 8 points, 4 actifs
+  for (let i = 0; i < 8; i++) {
+    const on = i >= from && i < from + 4, d = 0.2, x = W - M - 8 * d - 7 * 0.14 + i * (d + 0.14);
+    disc(s, x, 0.69, d, on ? C.lime : C.navyL);
+  }
+  const g = 0.2, cw = (CW - 3 * g) / 4, y0 = 2.95, ch = 3.55;
+  for (let k = 0; k < 4; k++) {
+    const i = from + k, [ic, t, d] = STEPS[i], x = M + k * (cw + g), last = i === 7, fg = last ? C.navyD : C.white;
+    rrect(s, x, y0, cw, ch, last ? C.lime : C.navyL);
+    disc(s, x + 0.24, y0 - 0.45, 0.9, last ? C.navyD : C.green, last ? { line: { color: C.lime, width: 2.5 } } : {});
+    T(s, '0' + (i + 1), { x: x + 0.24, y: y0 - 0.45, w: 0.9, h: 0.9, fontSize: 21, bold: true, align: 'center', valign: 'middle', color: last ? C.lime : C.white });
+    await ico(s, ic, last ? '07264B' : 'B9E35A', x + cw - 0.68, y0 + 0.26, 0.4);
+    T(s, t, { x: x + 0.26, y: y0 + 0.72, w: cw - 0.5, h: 0.62, fontSize: 16, bold: true, color: fg, valign: 'bottom', lineSpacingMultiple: 1.0 });
+    rect(s, x + 0.26, y0 + 1.46, 0.5, 0.045, last ? C.navyD : C.green);
+    T(s, d, { x: x + 0.26, y: y0 + 1.66, w: cw - 0.46, h: 1.8, fontSize: 12.5, color: last ? C.navyD : C.pale, lineSpacingMultiple: 1.2 });
+  }
+  if (withNote) T(s, NOTE, { x: M, y: 6.82, w: 9, h: 0.26, fontSize: 10.5, color: C.pale });
   pno(s);
 }
 
@@ -188,8 +249,6 @@ async function volet(idx, side, dark, photo, focal, titleLines, lead, items, not
   await logoDims();
   const OV = {
     left: await overlay('ov_left', 0, 0, 1, 0, [[0, 0.97], [0.30, 0.94], [0.47, 0.74], [0.68, 0]]),
-    right: await overlay('ov_right', 1, 0, 0, 0, [[0, 0.97], [0.30, 0.94], [0.47, 0.74], [0.68, 0]]),
-    bottom: await overlay('ov_bottom', 0, 0, 0, 1, [[0, 0], [0.40, 0], [0.60, 0.84], [1, 0.97]]),
   };
 
   // ================================================================ OUVERTURE
@@ -202,348 +261,258 @@ async function volet(idx, side, dark, photo, focal, titleLines, lead, items, not
     s.addImage({ path: OV.left, x: 0, y: 0, w: W, h: H });
     ring(s, 9.9, -5.0, 7.4, C.lime, 34, 55);
     logoPill(s, M, 0.5, 2.1, 'logo_full.png');
-    kicker(s, 'Le réseau d’accompagnement des artisans RGE', M, 2.45);
-    T(s, [{ text: 'Artisans RGE,', options: { breakLine: true } }, { text: 'vous n’êtes', options: { color: C.lime, breakLine: true } }, { text: 'plus seuls.', options: { color: C.lime } }],
-      { x: M, y: 2.85, w: 6.8, h: 2.55, fontSize: 56, bold: true, lineSpacingMultiple: 0.95 });
-    T(s, 'Le partenaire unique de vos projets', { x: M, y: 5.72, w: 6.4, h: 0.35, fontSize: 18, bold: true });
-    T(s, 'Dossiers CEE, démarches administratives, formation, qualification RGE, fournisseurs, réseau.', { x: M, y: 6.16, w: 5.5, h: 0.7, fontSize: 14, color: C.pale, lineSpacingMultiple: 1.2 });
+    disc(s, M, 2.44, 0.2, C.green);
+    T(s, sixieme('MANDATAIRE CEE DE LA ', ' PÉRIODE'), { x: M + 0.36, y: 2.4, w: 7, h: 0.28, fontSize: 12, bold: true, charSpacing: 4, color: C.lime });
+    T(s, [{ text: 'Vous installez.', options: { breakLine: true } }, { text: 'Nous vous', options: { color: C.lime, breakLine: true } }, { text: 'accompagnons', options: { color: C.lime, breakLine: true } }, { text: 'à chaque étape.', options: { color: C.lime } }],
+      { x: M, y: 2.82, w: 6.9, h: 2.95, fontSize: 46, bold: true, lineSpacingMultiple: 0.95 });
+    T(s, 'Cercle Énergie — Le partenaire unique de vos projets', { x: M, y: 5.98, w: 7.2, h: 0.35, fontSize: 17, bold: true });
+    T(s, `CEE${NB}: Certificats d’Économies d’Énergie`, { x: M, y: 6.46, w: 6, h: 0.3, fontSize: 13, color: C.pale });
   }
 
-  // ---------- 2. Le constat
+  // ---------- 2. Les notions en clair
   {
-    const s = newSlide();
-    await pic(s, 'paperasse', 0, 0, W, H, { fx: 0.5, fy: 0.5 });
-    s.addImage({ path: OV.right, x: 0, y: 0, w: W, h: H });
-    const x = 7.15;
-    kicker(s, 'Le constat', x, 0.95);
-    T(s, [{ text: 'Petit artisan RGE,', options: { breakLine: true } }, { text: 'seul face à tout.', options: { color: C.lime } }],
-      { x, y: 1.38, w: 5.6, h: 1.15, fontSize: 32, bold: true, lineSpacingMultiple: 0.98 });
-    const pts = [
-      ['FaFolderOpen', 'L’administratif', `Dossiers, pièces à réunir, suivi${NB}: du temps en moins sur vos chantiers.`],
-      ['FaAward', 'Les exigences RGE', 'Une qualification à obtenir, puis à conserver.'],
-      ['FaTags', 'Les prix fournisseurs', 'Difficile de négocier son matériel quand on est seul.'],
+    const s = newSlide(); s.background = { color: C.mist };
+    kicker(s, 'Les notions en clair', M, 0.65, C.greenD);
+    title(s, [{ text: 'Les CEE, ' }, { text: 'en trois notions', options: { color: C.green } }], C.navy);
+    T(s, `CEE${NB}: Certificats d’Économies d’Énergie.`, { x: M, y: 1.72, w: CW, h: 0.34, fontSize: 16, color: C.grey });
+    const N = [
+      ['FaLandmark', 'Le dispositif CEE', 'Un dispositif d’État. Il oblige les fournisseurs d’énergie et les distributeurs de carburant à financer des travaux de rénovation énergétique, sous peine de pénalités.'],
+      ['FaBolt', `Les «${NB}obligés${NB}»`, 'Les fournisseurs d’énergie et les distributeurs de carburant. Ce sont eux que le dispositif oblige à financer ces travaux.'],
+      ['FaHandshake', 'Le mandataire CEE', 'Une société de services spécialisée, qui aide les obligés à réaliser leurs obligations. Experte du montage des dossiers, des règles fixées par l’État et de l’accompagnement des entreprises de travaux.'],
     ];
+    const g = 0.275, cw = (CW - 2 * g) / 3, y0 = 2.3, ch = 3.52;
     for (let i = 0; i < 3; i++) {
-      const [ic, t, d] = pts[i], y = 3.0 + i * 1.28;
-      disc(s, x, y, 0.72, C.navyL, { line: { color: C.lime, width: 1.5 } });
-      await ico(s, ic, 'B9E35A', x + 0.21, y + 0.21, 0.3);
-      T(s, t, { x: x + 0.98, y: y - 0.02, w: 4.4, h: 0.36, fontSize: 18, bold: true });
-      T(s, d, { x: x + 0.98, y: y + 0.38, w: 4.3, h: 0.62, fontSize: 14, color: C.pale, lineSpacingMultiple: 1.15 });
+      const [ic, t, d] = N[i], x = M + i * (cw + g), hi = i === 2;
+      rrect(s, x, y0, cw, ch, hi ? C.navyD : C.white, 0.16, { shadow: softShadow() });
+      disc(s, x + 0.32, y0 + 0.32, 0.78, hi ? C.lime : C.green);
+      await ico(s, ic, hi ? '07264B' : 'FFFFFF', x + 0.32 + 0.23, y0 + 0.32 + 0.23, 0.32);
+      T(s, '0' + (i + 1), { x: x + cw - 1.05, y: y0 + 0.44, w: 0.75, h: 0.5, fontSize: 24, bold: true, align: 'right', color: hi ? C.lime : C.pale });
+      T(s, t, { x: x + 0.32, y: y0 + 1.26, w: cw - 0.6, h: 0.4, fontSize: 19, bold: true, color: hi ? C.white : C.navy });
+      T(s, d, { x: x + 0.32, y: y0 + 1.74, w: cw - 0.56, h: 1.7, fontSize: 12.5, color: hi ? C.pale : C.grey, lineSpacingMultiple: 1.22 });
     }
+    rrect(s, M, 6.06, CW, 0.7, C.navy, 0.35);
+    T(s, [...sixieme('Cercle Énergie est mandataire CEE de la ', ' période. ', { bold: true, color: C.lime }), { text: 'Et, pour vous, le partenaire unique de vos projets.' }],
+      { x: M + 0.4, y: 6.06, w: CW - 0.8, h: 0.7, fontSize: 14.5, valign: 'middle', align: 'center' });
     pno(s);
   }
 
-  // ---------- 3. La réponse
-  {
-    const s = newSlide(); s.background = { color: C.navyD };
-    ring(s, -3.6, 5.2, 7.2, C.teal, 30, 70); ring(s, 9.4, -3.4, 7.6, C.lime, 34, 72);
-    kicker(s, 'Notre réponse', M, 0.85);
-    T(s, [{ text: 'Ce que vous n’arrivez pas', options: { breakLine: true } }, { text: 'à faire seul,', options: { breakLine: true } }, { text: 'on vous aide à le faire.', options: { color: C.lime } }],
-      { x: M, y: 1.3, w: CW, h: 2.05, fontSize: 42, bold: true, lineSpacingMultiple: 0.98 });
-    T(s, `Cercle Énergie est un réseau d’accompagnement pour les artisans RGE, surtout les petits artisans. Mandataire CEE, nous gérons vos dossiers${NB}: c’est le cœur de notre métier. Mais ce n’est plus tout. Administratif, formation, qualification RGE, fournisseurs${NB}: nous vous aidons là où vous êtes seul.`,
-      { x: M, y: 3.62, w: 9.0, h: 1.75, fontSize: 17, color: C.pale, lineSpacingMultiple: 1.25 });
-    ['Simplifier', 'Sécuriser', 'Valoriser'].forEach((w, i) => {
-      const x = M + i * 3.05;
-      rrect(s, x, 5.75, 2.8, 0.85, i === 1 ? C.lime : C.green, 0.42);
-      T(s, w, { x, y: 5.75, w: 2.8, h: 0.85, fontSize: 22, bold: true, align: 'center', valign: 'middle', color: i === 1 ? C.navyD : C.white });
-    });
-    pno(s);
-  }
+  // ================================================================ VOUS
+  section('Vous');
 
-  // ================================================================ COMPRENDRE
-  section('Comment ça marche');
-
-  // ---------- 4. Comment ça marche (schéma)
+  // ---------- 3. À qui nous parlons
   {
     const s = newSlide(); s.background = { color: C.mist };
-    kicker(s, 'Comment ça marche', M, 0.65, C.greenD);
-    title(s, 'Des fournisseurs d’énergie à votre client', C.navy);
-    const nodes = [
-      ['FaBolt', `Les «${NB}obligés${NB}»`, 'Les fournisseurs d’énergie. L’État les oblige à financer des économies d’énergie.'],
-      ['FaLandmark', 'Les délégataires', `Les obligés leur délèguent cette obligation. Ils financent les primes${NB}CEE*.`],
-      [null, 'Cercle Énergie', 'Mandataire. Fait le lien entre vous et les délégataires, et prend en charge l’administratif.'],
-      ['FaTools', 'L’artisan RGE', 'Vous réalisez les travaux.'],
-      ['FaHome', 'Votre client', `Il bénéficie de la prime${NB}CEE*.`],
+    const pw = 5.0;
+    await pic(s, 'chauffage', 0, 0, pw, H, { fx: 0.47, fy: 0.5 });
+    rect(s, pw, 0, 0.09, H, C.green);
+    const x = pw + 0.8, w = W - x - M;
+    kicker(s, 'À qui nous parlons', x, 0.72, C.greenD);
+    T(s, [{ text: 'Aux professionnels', options: { breakLine: true } }, { text: 'de terrain.', options: { color: C.green } }], { x, y: 1.08, w, h: 1.12, fontSize: 32, bold: true, color: C.navy, lineSpacingMultiple: 0.98 });
+    T(s, `Votre priorité${NB}: conseiller, dimensionner,\ninstaller et satisfaire vos clients.`, { x, y: 2.34, w, h: 0.66, fontSize: 15, color: C.grey, lineSpacingMultiple: 1.25 });
+    T(s, 'VOS MÉTIERS', { x, y: 3.3, w, h: 0.26, fontSize: 11, bold: true, charSpacing: 4, color: C.greenD });
+    let y = chips(s, ['Artisans chauffagistes', 'Entreprises de génie climatique', 'Spécialistes de l’isolation', 'Professionnels RGE**'], x, 3.66, w, { fill: C.navy, color: C.white, h: 0.46 });
+    T(s, 'VOS CHANTIERS CHEZ LES PARTICULIERS', { x, y: y + 0.36, w, h: 0.26, fontSize: 11, bold: true, charSpacing: 4, color: C.greenD });
+    y = chips(s, ['Pompes à chaleur (PAC) air/eau', 'PAC air/air*', 'Chauffe-eau thermodynamiques'], x, y + 0.72, w, { fill: C.tint, color: C.navy, line: { color: C.green, width: 1 }, h: 0.46 });
+    T(s, [{ text: '* Lorsque les dispositifs le permettent.', options: { breakLine: true } }, { text: `** RGE${NB}: Reconnu Garant de l’Environnement.` }], { x, y: 6.58, w: w - 0.8, h: 0.5, fontSize: 10.5, color: C.grey, lineSpacingMultiple: 1.15 });
+    pno(s);
+  }
+
+  // ---------- 4. Vos irritants quotidiens
+  {
+    const s = newSlide(); s.background = { color: C.navyD };
+    ring(s, 10.3, -4.4, 6.8, C.teal, 26, 75);
+    kicker(s, 'Votre quotidien', M, 0.65);
+    title(s, [{ text: 'Votre quotidien, ' }, { text: 'nous le connaissons.', options: { color: C.lime } }]);
+    T(s, 'Vous faites des chantiers de qualité. Autour, cinq sujets vous prennent du temps.', { x: M, y: 1.72, w: 10.5, h: 0.34, fontSize: 16, color: C.pale });
+    const I = [
+      ['FaBalanceScale', 'Des offres difficiles à comparer', `Négoces et fabricants${NB}: prix, disponibilité, qualité, support, conditions.`],
+      ['FaSyncAlt', 'Des aides complexes et mouvantes', 'Les CEE et les autres dispositifs demandent du temps pour être suivis.'],
+      ['FaShieldAlt', 'Un besoin de confiance', 'La crainte d’une erreur ou d’un refus de dossier.'],
+      ['FaPuzzlePiece', 'Une chaîne morcelée', 'Contacts, visites, devis, équipements, justificatifs, suivi, primes, trésorerie.'],
+      ['FaUser', 'Le sentiment de tout gérer seul', `Commercial, technique, administratif, financier${NB}: tout repose sur vous.`],
     ];
-    const colW = CW / 5, d = 1.6, cy = 3.0;
+    const gap = 0.14, cw = (CW - 4 * gap) / 5, y0 = 2.42, ch = 3.42;
     for (let i = 0; i < 5; i++) {
-      const [ic, t, desc] = nodes[i];
-      const cx = M + colW * (i + 0.5);
-      if (ic) {
-        disc(s, cx - d / 2, cy - d / 2, d, C.navy, { shadow: softShadow() });
-        await ico(s, ic, 'B9E35A', cx - 0.33, cy - 0.33, 0.66);
-      } else {
-        disc(s, cx - d / 2 - 0.1, cy - d / 2 - 0.1, d + 0.2, C.green);
-        disc(s, cx - d / 2, cy - d / 2, d, C.white);
-        logoAt(s, cx, cy, 1.28);
-      }
-      if (i < 4) await ico(s, 'FaArrowRight', '01B7BA', cx + colW / 2 - 0.16, cy - 0.16, 0.32);
-      T(s, t, { x: cx - colW / 2, y: 4.1, w: colW, h: 0.35, fontSize: 16, bold: true, color: i === 2 ? C.greenD : C.navy, align: 'center' });
-      T(s, desc, { x: cx - 1.1, y: 4.5, w: 2.2, h: 1.25, fontSize: 12.5, color: C.grey, align: 'center', lineSpacingMultiple: 1.15 });
+      const [ic, t, d] = I[i], x = M + i * (cw + gap);
+      rrect(s, x, y0, cw, ch, C.navyL);
+      disc(s, x + 0.2, y0 + 0.24, 0.72, C.green);
+      await ico(s, ic, 'FFFFFF', x + 0.2 + 0.21, y0 + 0.24 + 0.21, 0.3);
+      T(s, t, { x: x + 0.2, y: y0 + 1.16, w: cw - 0.32, h: 0.72, fontSize: 13.5, bold: true, lineSpacingMultiple: 1.0 });
+      T(s, d, { x: x + 0.2, y: y0 + 2.0, w: cw - 0.36, h: 1.32, fontSize: 12, color: C.pale, lineSpacingMultiple: 1.2 });
     }
-    rrect(s, M, 5.92, CW, 0.74, C.navy, 0.37);
-    T(s, [{ text: `En clair${NB}: `, options: { bold: true, color: C.lime } }, { text: 'vous réalisez les travaux, votre client bénéficie de la prime*, nous faisons le lien.' }],
-      { x: M + 0.4, y: 5.92, w: CW - 0.8, h: 0.74, fontSize: 14.5, valign: 'middle', align: 'center' });
-    T(s, NOTE, { x: M, y: 6.92, w: 8, h: 0.26, fontSize: 10.5, color: C.grey });
+    rrect(s, M, 6.06, 8.9, 0.7, C.lime, 0.35);
+    T(s, 'Moins de temps dans l’administratif, plus de temps sur vos chantiers.', { x: M + 0.3, y: 6.06, w: 8.3, h: 0.7, fontSize: 15, bold: true, color: C.navyD, valign: 'middle', align: 'center' });
     pno(s);
   }
 
-  // ================================================================ L'ACCOMPAGNEMENT
-  section('Les six volets');
+  // ================================================================ NOTRE POSITIONNEMENT
+  section('Notre positionnement');
 
-  // ---------- 5. Six volets (vue d'ensemble)
+  // ---------- 5. Notre promesse
   {
     const s = newSlide(); s.background = { color: C.navyD };
-    ring(s, 10.3, -4.4, 6.8, C.teal, 26, 75);
-    kicker(s, 'Notre accompagnement', M, 0.65);
-    title(s, [{ text: 'Six volets. ' }, { text: 'Un seul réseau.', options: { color: C.lime } }]);
-    const V = [
-      ['FaFileSignature', 'Dossiers CEE et primes*', 'Éligibilité, montage, vérification, suivi jusqu’au versement des primes*.'],
-      ['FaFolderOpen', 'Démarches administratives', 'Nous vous épaulons sur l’administratif lié à vos chantiers aidés.'],
-      ['FaChalkboardTeacher', 'Formation aux CEE', 'Les primes*, les pièces à fournir, les dossiers refusés à éviter.'],
-      ['FaAward', 'Qualification RGE', 'Un accompagnement pour obtenir et conserver la qualification RGE.'],
-      ['FaTags', 'Tarifs préférentiels fournisseurs', 'Des fournisseurs partenaires, à des conditions préférentielles.'],
-      ['FaUsers', 'Un réseau', 'Un interlocuteur, des artisans comme vous, le lien avec les délégataires CEE.'],
-    ];
-    const g = 0.2, cw = (CW - 2 * g) / 3, ch = 2.12, y0 = 2.05;
-    for (let i = 0; i < 6; i++) {
-      const [ic, t, d] = V[i], x = M + (i % 3) * (cw + g), y = y0 + Math.floor(i / 3) * (ch + g), last = i === 5;
-      rrect(s, x, y, cw, ch, last ? C.lime : C.navyL);
-      disc(s, x + 0.28, y + 0.28, 0.74, last ? C.navyD : C.green);
-      await ico(s, ic, last ? 'B9E35A' : 'FFFFFF', x + 0.5, y + 0.5, 0.3);
-      T(s, '0' + (i + 1), { x: x + cw - 1.0, y: y + 0.3, w: 0.72, h: 0.4, fontSize: 22, bold: true, align: 'right', color: last ? C.navyD : C.lime });
-      T(s, t, { x: x + 1.2, y: y + 0.28, w: cw - 2.15, h: 0.74, fontSize: 14.5, bold: true, valign: 'middle', color: last ? C.navyD : C.white, lineSpacingMultiple: 1.0 });
-      T(s, d, { x: x + 0.28, y: y + 1.2, w: cw - 0.5, h: 0.8, fontSize: 12.5, color: last ? C.navyD : C.pale, lineSpacingMultiple: 1.2 });
-    }
-    T(s, NOTE, { x: M, y: 6.72, w: 8, h: 0.26, fontSize: 10.5, color: C.pale });
-    pno(s);
-  }
-
-  // ---------- 6–11. Un volet par diapositive
-  await volet(1, 'R', false, 'remise-dossier', { fx: 0.53, fy: 0.5 }, ['Dossiers CEE', 'et primes*'],
-    'Le cœur de notre accompagnement. Vous réalisez les travaux, nous prenons en charge le dossier, du début à la fin.',
-    ['Éligibilité étudiée selon vos travaux', 'Dossier monté et vérifié', 'Suivi jusqu’au versement\ndes primes*'], NOTE);
-  await volet(2, 'L', true, 'portrait-conseillere', { fx: 0.4, fy: 0.5 }, ['Démarches', 'administratives'],
-    'Pas seulement les CEE. Nous vous épaulons sur l’administratif lié à vos chantiers aidés.',
-    ['Au-delà des seuls dossiers CEE', 'L’administratif de vos\nchantiers aidés', 'Un interlocuteur pour vous épauler']);
-  await volet(3, 'R', false, 'formation', { fx: 0.55, fy: 0.5 }, ['Formation', 'aux CEE'],
-    'Comprendre le dispositif pour ne plus le subir. Nous vous expliquons ce qu’il faut savoir.',
-    ['Comment fonctionnent les primes*', 'Quelles pièces fournir', 'Comment éviter les dossiers refusés'], '* Primes versées sous réserve de validation du dossier.');
-  await volet(4, 'L', true, 'qualification-rge', { fx: 0.65, fy: 0.5 }, ['Qualification', 'RGE'],
-    'La qualification RGE s’obtient, puis se conserve. Nous vous accompagnons aux deux moments.',
-    ['Un accompagnement pour l’obtenir', 'Un accompagnement pour\nla conserver', 'Vous n’êtes plus seul face\naux exigences RGE']);
-  await volet(5, 'R', false, 'fournisseur', { fx: 0.45, fy: 0.5 }, ['Tarifs', 'préférentiels', 'fournisseurs'],
-    'Nous vous mettons en relation avec des fournisseurs de matériel partenaires.',
-    ['Des fournisseurs de matériel\npartenaires', 'Des conditions préférentielles', 'Vous n’êtes plus seul face aux prix']);
-  await volet(6, 'L', true, 'reseau', { fx: 0.51, fy: 0.5 }, ['Un réseau'],
-    'Vous ne travaillez plus seul dans votre coin. Vous rejoignez un réseau qui avance avec vous.',
-    ['Un interlocuteur', 'Des artisans comme vous', 'Le lien avec les délégataires CEE']);
-
-  // ================================================================ VOS DOSSIERS CEE
-  section('Vos dossiers CEE');
-  const SV = [
-    ['Étude d’éligibilité', 'Identification des aides CEE mobilisables selon les travaux envisagés.'],
-    ['Valorisation financière', 'Recherche des meilleures conditions de valorisation auprès de nos partenaires.'],
-    ['Gestion administrative', 'Constitution, vérification et suivi des dossiers.'],
-    ['Accompagnement réglementaire', `Vérification des exigences documentaires et des conditions du${NB}dispositif.`],
-    ['Suivi du financement', `Coordination avec les délégataires jusqu’au traitement du dossier et au versement des${NB}primes*.`],
-  ];
-
-  // ---------- 12. Cinq étapes
-  {
-    const s = newSlide(); s.background = { color: C.navyD };
-    ring(s, 10.3, -4.4, 6.8, C.teal, 26, 75);
-    kicker(s, 'Vos dossiers CEE', M, 0.65);
-    title(s, [{ text: 'Un dossier CEE, ' }, { text: 'cinq étapes.', options: { color: C.lime } }]);
-    T(s, 'Vous réalisez les travaux. Nous nous occupons du dossier, étape par étape.', { x: M, y: 1.72, w: 10, h: 0.34, fontSize: 16, color: C.pale });
-    const gap = 0.14, cw = (CW - 4 * gap) / 5, y0 = 3.05, ch = 3.3;
-    SV.forEach(([t, d], i) => {
-      const x = M + i * (cw + gap), last = i === 4, fg = last ? C.navyD : C.white;
-      rrect(s, x, y0, cw, ch, last ? C.lime : C.navyL);
-      disc(s, x + 0.18, y0 - 0.43, 0.86, last ? C.navyD : C.green);
-      T(s, '0' + (i + 1), { x: x + 0.18, y: y0 - 0.43, w: 0.86, h: 0.86, fontSize: 20, bold: true, align: 'center', valign: 'middle', color: last ? C.lime : C.white });
-      T(s, t, { x: x + 0.18, y: y0 + 0.66, w: cw - 0.3, h: 0.62, fontSize: 13, bold: true, color: fg, lineSpacingMultiple: 1.0 });
-      T(s, d, { x: x + 0.18, y: y0 + 1.36, w: cw - 0.34, h: 1.85, fontSize: 13, color: last ? C.navyD : C.pale, lineSpacingMultiple: 1.2 });
+    ring(s, 10.6, -4.2, 7.6, C.lime, 34, 72);
+    kicker(s, 'Notre promesse', M, 0.85);
+    T(s, [{ text: 'Moins de complexité, plus de visibilité', options: { breakLine: true } }, { text: `et un accompagnement concret${NB}:`, options: { breakLine: true } }, { text: 'du premier contact commercial', options: { color: C.lime, breakLine: true } }, { text: 'au versement de la prime*.', options: { color: C.lime } }],
+      { x: M, y: 1.3, w: CW, h: 2.3, fontSize: 34, bold: true, lineSpacingMultiple: 0.98 });
+    T(s, [{ text: `Notre ambition${NB}: `, options: { bold: true, color: C.white } }, { text: 'être le partenaire de référence des artisans, notamment des chauffagistes qui installent des pompes à chaleur ou des chauffe-eau thermodynamiques. Et devenir votre point d’entrée unique vers les services, les outils, les financements et les partenaires utiles à votre activité.' }],
+      { x: M, y: 3.86, w: 9.4, h: 1.55, fontSize: 16, color: C.pale, lineSpacingMultiple: 1.25 });
+    const pw = [2.3, 2.9, 4.5], pl = ['Fiable', 'Accessible', 'Présent à chaque étape'];
+    let px = M;
+    pl.forEach((t, i) => {
+      rrect(s, px, 5.7, pw[i], 0.82, i === 1 ? C.lime : C.green, 0.41);
+      T(s, t, { x: px, y: 5.7, w: pw[i], h: 0.82, fontSize: 20, bold: true, align: 'center', valign: 'middle', color: i === 1 ? C.navyD : C.white });
+      px += pw[i] + 0.22;
     });
-    T(s, NOTE, { x: M, y: 6.72, w: 8, h: 0.26, fontSize: 10.5, color: C.pale });
+    T(s, NOTE, { x: M, y: 6.82, w: 9, h: 0.26, fontSize: 10.5, color: C.pale });
     pno(s);
   }
 
-  // ---------- 13. Qui fait quoi
-  {
-    const s = newSlide(); s.background = { color: C.white };
-    kicker(s, 'Répartition des rôles', M, 0.65, C.greenD);
-    title(s, [{ text: 'Vous, sur le chantier.', options: { breakLine: true } }, { text: 'Nous, sur le dossier.', options: { color: C.green } }], C.navy, { h: 1.15 });
-    const cols = [
-      { t: 'Vous', k: 'Artisan RGE', li: ['Vous présentez les travaux envisagés', 'Vous réalisez les travaux', 'Vous restez concentré sur vos clients'] },
-      { t: 'Cercle Énergie', k: 'Mandataire CEE', li: ['Étudie l’éligibilité', 'Recherche les meilleures conditions de valorisation', 'Constitue et vérifie le dossier', 'Coordonne et suit le financement'], big: true },
-      { t: 'Délégataire CEE', k: 'Acteur du financement', li: ['Traite le dossier', `Verse les primes, sous réserve de validation du${NB}dossier`] },
-    ];
-    const xs = [M, 4.4, 8.93], ws = [3.4, 4.28, 3.65];
-    cols.forEach((c, i) => {
-      const y = c.big ? 2.5 : 2.8, h = c.big ? 4.25 : 3.65, fg = c.big ? C.white : C.navy;
-      rrect(s, xs[i], y, ws[i], h, c.big ? C.navyD : C.mist, 0.18, c.big ? { shadow: softShadow() } : {});
-      T(s, c.t, { x: xs[i] + 0.35, y: y + 0.32, w: ws[i] - 0.6, h: 0.5, fontSize: c.big ? 26 : 22, bold: true, color: fg });
-      T(s, c.k.toUpperCase(), { x: xs[i] + 0.35, y: y + 0.9, w: ws[i] - 0.6, h: 0.28, fontSize: 10, bold: true, charSpacing: 3, color: c.big ? C.lime : C.greenD });
-      let yy = y + 1.45;
-      c.li.forEach((l) => {
-        const tw = ws[i] - 1.0, hh = nLines(l, 14, tw) * 0.25 + 0.05;
-        disc(s, xs[i] + 0.35, yy + 0.06, 0.14, c.big ? C.lime : C.green);
-        T(s, l, { x: xs[i] + 0.68, y: yy, w: tw, h: hh, fontSize: 14, color: fg, lineSpacingMultiple: 1.1 });
-        yy += hh + 0.17;
-      });
-    });
-    pno(s);
-  }
-
-  // ================================================================ VOS SECTEURS
-  section('Vos secteurs');
-
-  // ---------- 14. Mosaïque
-  {
-    const s = newSlide(); s.background = { color: C.navyD };
-    const tiles = [['pompe-a-chaleur', 'Pompes à chaleur', 0.48, 0.5], ['chauffage', 'Chauffage', 0.5, 0.5], ['isolation-combles', 'Isolation', 0.68, 0.5], ['renovation', 'Rénovation énergétique', 0.58, 0.5], ['tertiaire', 'Tertiaire', 0.5, 0.5], ['industrie', 'Industrie', 0.62, 0.5], ['agricole', 'Agricole', 0.62, 0.5]];
-    const tw = W / 4, th = H / 2, g = 0.04, lb = 0.78;
-    rect(s, 0, 0, tw - g, th - g, C.green);
-    T(s, 'NOS TERRAINS', { x: 0.42, y: 0.5, w: tw - 0.7, h: 0.3, fontSize: 11, bold: true, charSpacing: 4, color: C.navyD });
-    T(s, [{ text: 'Partout où', options: { breakLine: true } }, { text: 'il y a de', options: { breakLine: true } }, { text: 'l’énergie à', options: { breakLine: true } }, { text: 'économiser.' }], { x: 0.42, y: 0.95, w: tw - 0.6, h: 2.2, fontSize: 28, bold: true, lineSpacingMultiple: 1.0 });
-    for (let i = 0; i < tiles.length; i++) {
-      const [img, label, fx, fy] = tiles[i];
-      const k = i + 1, x = (k % 4) * tw + (k % 4 ? g : 0), y = Math.floor(k / 4) * th + (k >= 4 ? g : 0);
-      const w = tw - g, h = th - g;
-      await pic(s, img, x, y, w, h - lb, { fx, fy });
-      rect(s, x, y + h - lb, w, lb, k % 2 ? C.navy : C.navyL);
-      T(s, label, { x: x + 0.3, y: y + h - lb, w: w - 0.5, h: lb, fontSize: 16, bold: true, valign: 'middle' });
-    }
-  }
-
-  // ---------- 15. Quatre secteurs, les professionnels concernés
+  // ---------- 6. Un cercle de confiance
   {
     const s = newSlide(); s.background = { color: C.mist };
-    kicker(s, 'Secteurs d’intervention', M, 0.65, C.greenD);
-    title(s, 'Quatre secteurs, les professionnels concernés', C.navy);
-    const SE = [
-      ['isolation-combles', 0.6, 'Résidentiel', ['Installateurs de pompes à chaleur et de systèmes de chauffage', 'Entreprises d’isolation et de rénovation énergétique', 'Professionnels de la ventilation']],
-      ['tertiaire', 0.5, 'Tertiaire', ['Entreprises intervenant dans le secteur tertiaire', 'Professionnels de la ventilation et des équipements thermiques', 'Installateurs de systèmes de chauffage']],
-      ['industrie', 0.6, 'Industrie', ['Entreprises intervenant dans le secteur industriel', 'Professionnels des équipements thermiques', 'Professionnels de la ventilation']],
-      ['agricole', 0.55, 'Agricole', ['Entreprises intervenant dans le secteur agricole', 'Professionnels des équipements thermiques', 'Installateurs de systèmes de chauffage']],
+    kicker(s, 'Notre positionnement', M, 0.65, C.greenD);
+    title(s, [{ text: 'Un cercle ' }, { text: 'de confiance', options: { color: C.green } }], C.navy);
+    T(s, 'Le cercle symbolise la continuité de l’accompagnement, la proximité et la coopération.', { x: M, y: 1.72, w: CW, h: 0.34, fontSize: 16, color: C.grey });
+    const cx = W / 2, cy = 4.13;
+    ring(s, cx - 1.72, cy - 1.72, 3.44, C.teal, 2, 35);
+    ring(s, cx - 1.45, cy - 1.45, 2.9, C.green, 16);
+    disc(s, cx - 1.12, cy - 1.12, 2.24, C.white, { shadow: softShadow() });
+    logoAt(s, cx, cy, 1.62);
+    const P = [
+      ['FaRoute', 'Simplicité', 'Un interlocuteur identifié, des étapes claires et des informations compréhensibles.'],
+      ['FaShieldAlt', 'Confiance', 'Des dossiers rigoureux, une communication transparente et une culture de conformité.'],
+      ['FaChartLine', 'Performance', 'Des outils et services qui font gagner du temps et aident à convertir les projets.'],
+      ['FaComments', 'Proximité', 'Un langage de terrain, des échanges humains et une connaissance des contraintes des installateurs.'],
     ];
-    const g = 0.22, cw = (CW - 3 * g) / 4, y0 = 1.95, ch = 4.78, ph = 1.4;
-    const tw = cw - 0.74;
-    const rowH = [0.7, 0.92, 0.48]; // 3, 4 et 2 lignes au plus (vérifié au rendu)
+    const cw = 4.1, ch = 1.76, xs = [M, W - M - cw], ys = [2.3, 4.2];
     for (let i = 0; i < 4; i++) {
-      const [img, fx, word, items] = SE[i], x = M + i * (cw + g);
-      rrect(s, x, y0, cw, ch, C.white, 0.16, { shadow: softShadow() });
-      await pic(s, img, x, y0, cw, ph, { fx, fy: 0.5, r: [0.16, 0.16, 0, 0], bg: C.mist });
-      T(s, word, { x: x + 0.26, y: y0 + ph + 0.22, w: cw - 0.4, h: 0.42, fontSize: 20, bold: true, color: C.navy });
-      let y = y0 + ph + 0.76;
-      items.forEach((it, r) => {
-        const h = rowH[r];
-        disc(s, x + 0.26, y + 0.06, 0.12, C.green);
-        T(s, it, { x: x + 0.52, y, w: tw, h, fontSize: 12, color: C.grey, lineSpacingMultiple: 1.12 });
-        y += h + 0.16;
-      });
+      const [ic, t, d] = P[i], x = xs[i % 2], y = ys[Math.floor(i / 2)];
+      rrect(s, x, y, cw, ch, C.white, 0.16, { shadow: softShadow() });
+      disc(s, x + 0.26, y + 0.26, 0.7, C.green);
+      await ico(s, ic, 'FFFFFF', x + 0.26 + 0.2, y + 0.26 + 0.2, 0.3);
+      T(s, t, { x: x + 1.16, y: y + 0.22, w: cw - 1.3, h: 0.36, fontSize: 18, bold: true, color: C.navy });
+      T(s, d, { x: x + 1.16, y: y + 0.62, w: cw - 1.38, h: 1.0, fontSize: 12, color: C.grey, lineSpacingMultiple: 1.18 });
     }
+    rrect(s, M, 6.14, CW - 0.9, 0.66, C.navy, 0.33);
+    T(s, [{ text: 'Expliquer', options: { bold: true, color: C.lime } }, { text: ' plutôt que promettre.  ' }, { text: 'Répondre', options: { bold: true, color: C.lime } }, { text: ' plutôt que renvoyer.  ' }, { text: 'Sécuriser', options: { bold: true, color: C.lime } }, { text: ' plutôt que complexifier.' }],
+      { x: M + 0.3, y: 6.14, w: CW - 1.5, h: 0.66, fontSize: 14, valign: 'middle', align: 'center' });
     pno(s);
   }
 
-  // ================================================================ POURQUOI NOUS REJOINDRE
-  section('Pourquoi nous rejoindre');
+  // ================================================================ LE PARCOURS DE A À Z
+  section('Le parcours de A à Z');
+  // ---------- 7–8. Les huit étapes
+  await parcours(0, 'Du premier contact au paiement de la prime*, un seul cercle de services.', true);
+  await parcours(4, 'Vous installez. Nous vous accompagnons à chaque étape.', false);
 
-  // ---------- 16. Seul / avec le réseau
+  // ================================================================ NOS SERVICES
+  section('Nos services');
+
+  // ---------- 9. Le cœur de métier : le financement CEE
+  await feature({ side: 'R', dark: false, photo: 'qualification-rge', focal: { fx: 0.57, fy: 0.5 }, ic: 'FaFileSignature', kick: 'Le cœur de métier',
+    titleLines: ['Le financement CEE,', { t: 'notre cœur de métier', c: C.green }],
+    lead: `Une équipe d’experts dédiée vous accompagne, avec deux exigences${NB}:\nla pédagogie et la conformité.`,
+    items: ['Comprendre les règles', 'Constituer et contrôler\nvos dossiers', 'Suivre chaque étape,\njusqu’au paiement des primes*'], note: NOTE2 });
+
+  // ---------- 10. La visite technique avec WOLTIC
+  await feature({ side: 'L', dark: true, photo: 'artisan-clients', focal: { fx: 0.6, fy: 0.5 }, ic: 'FaClipboardList', kick: 'La visite technique',
+    titleLines: ['La visite technique', { t: 'avec WOLTIC', c: C.lime }],
+    lead: 'WOLTIC est le logiciel utilisé pour les visites techniques. Il aide à structurer la collecte des informations terrain.', leadPt: 16, tag: 'Étape 03 du parcours' });
+
+  // ---------- 11. Un suivi humain de vos dossiers
+  await feature({ side: 'R', dark: false, photo: 'portrait-conseillere', focal: { fx: 0.4, fy: 0.5 }, ic: 'FaUserFriends', kick: 'Le suivi',
+    titleLines: ['Un suivi humain', { t: 'de vos dossiers', c: C.green }],
+    lead: 'Des dossiers suivis, des règles expliquées, un partenaire à vos côtés.',
+    items: ['Une équipe d’experts dédiée', 'Un interlocuteur identifié', 'Une visibilité sur l’avancement\nde vos dossiers'] });
+
+  // ---------- 12. Des équipements et des partenaires sélectionnés
+  await feature({ side: 'L', dark: true, photo: 'fournisseur', focal: { fx: 0.45, fy: 0.5 }, ic: 'FaBoxOpen', kick: 'Les équipements',
+    titleLines: ['Des équipements', { t: 'sélectionnés', c: C.lime }],
+    lead: 'Un accès simplifié à des équipements de qualité, notamment via des marques telles que Hitachi ou Thomson, selon les accords et gammes disponibles.',
+    items: ['Cohérence technique', 'Un choix adapté au chantier', 'Disponibilité et\naccompagnement commercial'] });
+
+  // ---------- 13. Un cercle qui s'élargit
+  {
+    const s = newSlide(); s.background = { color: C.navyD };
+    const lw = 4.9;
+    kicker(s, 'Et demain', M, 0.85);
+    T(s, [{ text: 'Un cercle', options: { breakLine: true } }, { text: 'qui s’élargit.', options: { color: C.lime } }], { x: M, y: 1.3, w: lw, h: 1.45, fontSize: 40, bold: true, lineSpacingMultiple: 0.98 });
+    T(s, 'Le cercle pourra s’élargir à d’autres services utiles à votre activité.', { x: M, y: 3.1, w: lw, h: 1.0, fontSize: 17, lineSpacingMultiple: 1.25 });
+    rect(s, M, 4.42, 0.6, 0.05, C.green);
+    T(s, 'Ces services sont envisagés pour la suite. Ils ne font pas partie de l’offre actuelle et seront annoncés lorsqu’ils seront disponibles.', { x: M, y: 4.7, w: lw - 0.3, h: 1.3, fontSize: 13.5, color: C.pale, lineSpacingMultiple: 1.25 });
+    const cx = 9.35, cy = 3.8, R = 2.25;
+    ring(s, cx - 3.05, cy - 3.05, 6.1, C.teal, 2, 55);
+    s.addShape(p.ShapeType.ellipse, { x: cx - R, y: cy - R, w: 2 * R, h: 2 * R, fill: { type: 'none' }, line: { color: C.lime, width: 2.25, dashType: 'dash' } });
+    ring(s, cx - 1.3, cy - 1.3, 2.6, C.green, 14);
+    disc(s, cx - 1.0, cy - 1.0, 2.0, C.white);
+    logoAt(s, cx, cy, 1.45);
+    const F = [['Accompagnement technique', -90, 3.1], ['Outils digitaux', -18, 2.2], ['Formation', 54, 1.9], ['Partenariats', 126, 1.9], ['Appui commercial', 198, 2.3]];
+    F.forEach(([t, a, w]) => {
+      const px = cx + R * Math.cos(a * Math.PI / 180), py = cy + R * Math.sin(a * Math.PI / 180), h = 0.58;
+      rrect(s, px - w / 2, py - h / 2, w, h, C.navyL, h / 2, { line: { color: C.lime, width: 1.5 } });
+      T(s, t, { x: px - w / 2, y: py - h / 2, w, h, fontSize: 13, bold: true, align: 'center', valign: 'middle' });
+    });
+    pno(s);
+  }
+
+  // ================================================================ NOTRE FAÇON DE TRAVAILLER
+  section('Notre façon de travailler');
+
+  // ---------- 14. Ce que nous ne promettons pas / notre façon de travailler
   {
     const s = newSlide(); s.background = { color: C.white };
     rect(s, W / 2, 0, W / 2, H, C.navy);
-    T(s, 'SEUL', { x: M, y: 0.8, w: 5, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: '6F819B' });
-    T(s, 'Vous portez tout.', { x: M, y: 1.2, w: 5.4, h: 0.7, fontSize: 26, bold: true, color: C.navy });
-    T(s, 'AVEC CERCLE ÉNERGIE', { x: W / 2 + 0.85, y: 0.8, w: 5, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: C.lime });
-    T(s, 'Vous avancez en réseau.', { x: W / 2 + 0.85, y: 1.2, w: 5.0, h: 0.7, fontSize: 26, bold: true });
+    T(s, 'CE QUE NOUS NE PROMETTONS PAS', { x: M, y: 0.8, w: 5.4, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: '6F819B' });
+    T(s, 'Pas de promesse en l’air.', { x: M, y: 1.2, w: 5.5, h: 0.7, fontSize: 26, bold: true, color: C.navy });
+    T(s, 'NOTRE FAÇON DE TRAVAILLER', { x: W / 2 + 0.85, y: 0.8, w: 5, h: 0.3, fontSize: 12, bold: true, charSpacing: 4, color: C.lime });
+    T(s, 'Des règles expliquées.', { x: W / 2 + 0.85, y: 1.2, w: 5.2, h: 0.7, fontSize: 26, bold: true });
     const rows = [
-      ['Dossiers CEE à monter\net à suivre vous-même', 'Dossiers CEE montés,\nvérifiés et suivis'],
-      ['Administratif des chantiers\naidés à gérer seul', 'Un appui sur vos démarches\nadministratives'],
-      ['Règles des CEE et exigences\nRGE à maîtriser seul', 'Formation aux CEE,\naccompagnement RGE'],
-      ['Matériel à négocier seul\nauprès des fournisseurs', 'Fournisseurs partenaires,\nconditions préférentielles'],
+      ['Une prime garantie', 'Des étapes et des conditions\nexpliquées'],
+      ['Un versement systématique', 'Des pièces et des points\nde conformité contrôlés'],
+      ['Un délai identique\npour tous les dossiers', 'Une visibilité sur\nl’avancement de vos dossiers'],
+      ['Un discours centré\nsur le montant des aides', 'Un suivi jusqu’au\npaiement des primes*'],
     ];
     for (let i = 0; i < rows.length; i++) {
-      const [a, b] = rows[i], y = 2.65 + i * 1.05;
+      const [a, b] = rows[i], y = 2.42 + i * 1.02;
       disc(s, M, y + 0.16, 0.46, 'D6DEE8');
       await ico(s, 'FaTimes', 'FFFFFF', M + 0.13, y + 0.29, 0.2);
       T(s, a, { x: M + 0.7, y, w: 4.5, h: 0.78, fontSize: 16, color: C.grey, valign: 'middle', lineSpacingMultiple: 1.1 });
       disc(s, W / 2 + 0.85, y + 0.16, 0.46, C.green);
       await ico(s, 'FaCheck', 'FFFFFF', W / 2 + 0.98, y + 0.29, 0.2);
-      T(s, b, { x: W / 2 + 1.55, y, w: 4.3, h: 0.78, fontSize: 17, bold: true, valign: 'middle', lineSpacingMultiple: 1.1 });
+      T(s, b, { x: W / 2 + 1.55, y, w: 4.4, h: 0.78, fontSize: 17, bold: true, valign: 'middle', lineSpacingMultiple: 1.1 });
     }
-    disc(s, W / 2 - 0.55, 3.75, 1.1, C.green, { line: { color: C.white, width: 5 } });
-    await ico(s, 'FaArrowRight', 'FFFFFF', W / 2 - 0.2, 4.1, 0.4);
+    disc(s, W / 2 - 0.55, 3.4, 1.1, C.green, { line: { color: C.white, width: 5 } });
+    await ico(s, 'FaArrowRight', 'FFFFFF', W / 2 - 0.2, 3.75, 0.4);
+    T(s, NOTE2, { x: W / 2 + 0.85, y: 6.62, w: 4.4, h: 0.42, fontSize: 10.5, color: C.pale, lineSpacingMultiple: 1.1 });
     pno(s);
   }
 
-  // ---------- 17. FAQ
-  const cardX = (k) => M + k * (3.76 + 0.275);
-  {
-    const s = newSlide(); s.background = { color: C.mist };
-    kicker(s, 'Questions fréquentes', M, 0.65, C.greenD);
-    title(s, 'Vos questions, nos réponses', C.navy);
-    const qa = [
-      [`Qu’est-ce qu’un mandataire CEE${NB}?`, 'Un intermédiaire qui fait le lien entre les artisans et les délégataires CEE, et qui prend en charge l’administratif. C’est le rôle de Cercle Énergie.'],
-      [`Cercle Énergie, c’est seulement les dossiers CEE${NB}?`, `Non. Les dossiers CEE restent le cœur. S’y ajoutent${NB}: les démarches administratives, la formation aux CEE, la qualification RGE, les tarifs préférentiels fournisseurs et le réseau.`],
-      [`Le versement des primes est-il garanti${NB}?`, `Non. Le versement des primes intervient sous réserve de validation du dossier. Notre rôle${NB}: monter, vérifier et suivre votre dossier, en lien avec les délégataires.`],
-    ];
-    qa.forEach(([q, a], i) => {
-      const x = cardX(i), y0 = 2.05, w = 3.76, h = 4.75, hi = i === 2;
-      rrect(s, x, y0, w, h, hi ? C.navyD : C.white, 0.16, { shadow: softShadow() });
-      disc(s, x + 0.32, y0 + 0.32, 0.7, hi ? C.lime : C.green);
-      T(s, '?', { x: x + 0.32, y: y0 + 0.32, w: 0.7, h: 0.7, fontSize: 22, bold: true, align: 'center', valign: 'middle', color: hi ? C.navyD : C.white });
-      T(s, q, { x: x + 0.32, y: y0 + 1.25, w: w - 0.6, h: 0.95, fontSize: 17, bold: true, color: hi ? C.white : C.navy, lineSpacingMultiple: 1.0 });
-      T(s, a, { x: x + 0.32, y: y0 + 2.35, w: w - 0.62, h: 2.2, fontSize: 13.5, color: hi ? C.pale : C.grey, lineSpacingMultiple: 1.25 });
-    });
-    pno(s);
-  }
+  // ================================================================ PARLONS DE VOS PROJETS
+  section('Parlons de vos projets');
 
-  // ================================================================ REJOINDRE LE RÉSEAU
-  section('Rejoindre le réseau');
-
-  // ---------- 18. Rejoindre le réseau, en pratique
+  // ---------- 15. Notre cap (citation d'intention — pas un témoignage)
   {
     const s = newSlide(); s.background = { color: C.navyD };
     await pic(s, 'equipe', W / 2, 0, W / 2, H, { fx: 0.545, fy: 0.5 });
     ring(s, -4.3, 5.6, 6.2, C.teal, 26, 72);
-    kicker(s, 'Rejoindre le réseau', M, 0.7);
-    T(s, [{ text: 'Un échange,', options: { breakLine: true } }, { text: 'et vous n’êtes', options: { color: C.lime, breakLine: true } }, { text: 'plus seul.', options: { color: C.lime } }], { x: M, y: 1.08, w: 5.5, h: 1.4, fontSize: 30, bold: true, lineSpacingMultiple: 0.98 });
-    const st = [
-      ['Vous prenez contact', 'Présentez-nous votre activité et vos chantiers.'],
-      ['Nous faisons le point', 'Nous voyons ensemble où vous avez besoin d’aide.'],
-      ['Nous lançons vos dossiers CEE', 'Éligibilité, montage, vérification, suivi.'],
-      ['Vous avancez avec le réseau', 'Administratif, formation, RGE, fournisseurs.'],
-    ];
-    st.forEach(([t, d], i) => {
-      const y = 2.85 + i * 1.0;
-      disc(s, M, y, 0.64, C.green);
-      T(s, String(i + 1), { x: M, y, w: 0.64, h: 0.64, fontSize: 18, bold: true, align: 'center', valign: 'middle' });
-      T(s, t, { x: M + 0.9, y: y - 0.02, w: 4.6, h: 0.32, fontSize: 16, bold: true });
-      T(s, d, { x: M + 0.9, y: y + 0.33, w: 4.6, h: 0.5, fontSize: 13, color: C.pale, lineSpacingMultiple: 1.1 });
-    });
+    kicker(s, 'Notre cap', M, 0.8);
+    T(s, `Ce que nous voulons que chaque artisan puisse se dire en travaillant avec nous${NB}:`, { x: M, y: 1.3, w: 5.2, h: 0.75, fontSize: 15, color: C.pale, lineSpacingMultiple: 1.25 });
+    rect(s, M, 2.42, 0.07, 3.0, C.green);
+    const BL = { breakLine: true }, LB = { color: C.lime, breakLine: true };
+    T(s, [{ text: `«${NB}Enfin un partenaire`, options: BL }, { text: 'qui comprend mon métier,', options: BL }, { text: 'me parle simplement,', options: LB }, { text: 'm’aide à monter', options: LB }, { text: 'des projets solides', options: LB }, { text: 'et reste présent', options: LB }, { text: `jusqu’au bout.${NB}»`, options: { color: C.lime } }],
+      { x: M + 0.35, y: 2.38, w: 5.2, h: 3.1, fontSize: 23, bold: true, lineSpacingMultiple: 1.08, valign: 'middle' });
+    T(s, 'C’est notre objectif, pas un témoignage client.', { x: M, y: 5.82, w: 5.3, h: 0.3, fontSize: 12, color: C.pale });
     pno(s);
   }
 
-  // ---------- 19. Message clé
-  {
-    const s = newSlide();
-    await pic(s, 'artisan-clients', 0, 0, W, H, { fx: 0.5, fy: 0.5 });
-    s.addImage({ path: OV.bottom, x: 0, y: 0, w: W, h: H });
-    kicker(s, 'Notre message', M, 4.55);
-    T(s, [{ text: `«${NB}Vous réalisez les travaux. `, options: {} }, { text: `Pour ce que vous n’arrivez pas à faire seul, il y a le réseau Cercle${NB}Énergie.${NB}»`, options: { color: C.lime } }],
-      { x: M, y: 4.98, w: 11.0, h: 1.75, fontSize: 31, bold: true, lineSpacingMultiple: 1.0 });
-    pno(s);
-  }
-
-  // ---------- 20. Clôture
+  // ---------- 16. Clôture
   {
     const s = newSlide(); s.background = { color: C.green };
-    ring(s, 10.6, -3.9, 8.4, C.white, 40, 78); ring(s, -3.4, 5.0, 7.0, C.navy, 34, 80);
+    ring(s, 10.6, -3.9, 8.4, C.white, 40, 78); ring(s, -3.6, 5.75, 7.0, C.navy, 34, 80);
     logoPill(s, M, 0.6, 2.5, 'logo_full.png');
-    T(s, 'Rejoindre le réseau', { x: M, y: 2.75, w: CW, h: 1.2, fontSize: 64, bold: true });
-    T(s, [{ text: 'Cercle Énergie, le partenaire unique de vos projets.', options: { breakLine: true } }, { text: 'Ce que vous n’arrivez pas à faire seul, on vous aide à le faire.' }], { x: M, y: 4.2, w: CW, h: 1.0, fontSize: 20, bold: true, color: C.navyD, lineSpacingMultiple: 1.2 });
+    T(s, 'Parlons de vos projets', { x: M, y: 2.8, w: CW, h: 1.15, fontSize: 60, bold: true });
+    T(s, [{ text: 'Cercle Énergie, le partenaire unique de vos projets.', options: { breakLine: true } }, { text: 'Les bons équipements, les bons outils, le bon accompagnement.' }], { x: M, y: 4.2, w: CW, h: 1.0, fontSize: 20, bold: true, color: C.navyD, lineSpacingMultiple: 1.2 });
     const cts = [['FaPhoneAlt', '[Téléphone]'], ['FaEnvelope', '[E-mail]'], ['FaGlobe', '[Site web]']];
     for (let i = 0; i < 3; i++) {
       const x = M + i * 3.3;

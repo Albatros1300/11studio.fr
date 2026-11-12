@@ -486,3 +486,13 @@ section[id]{scroll-margin-top:96px}
 @media (prefers-reduced-motion:reduce){.hero2 .ln>span,.hero2 .hero2-foot,.hero2 .eyebrow,.page-hero *{opacity:1!important;transform:none!important}}
 .linkcards.six .lc:after{background:linear-gradient(to top,rgba(7,38,75,.97) 34%,rgba(7,38,75,.45) 72%,rgba(7,38,75,.25))}
 @media (max-width:600px){.linkcards.six .lc{aspect-ratio:4/3.5}}
+
+/* ---------- V6 : brief de marque (cercle de services, parcours en huit étapes) ---------- */
+.cols4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:48px}
+.dark .cols4 .box{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.dark .cols4 .box h3{color:#fff}.dark .cols4 .box p{color:#CFE0F3}.dark .cols4 .box .n{color:var(--lime)}
+.detail article.p8{grid-template-columns:auto 1fr}
+#cercle .lead{margin-top:18px;max-width:64ch}
+#cercle h2{max-width:22ch}
+@media (max-width:980px){.cols4{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.cols4{grid-template-columns:1fr}}

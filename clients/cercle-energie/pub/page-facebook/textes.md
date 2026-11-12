@@ -1,51 +1,51 @@
 # Page Facebook Cercle Énergie — textes à coller
 
 **Nom de la page** : Cercle Énergie
-**Catégorie** : Service aux entreprises (ou « Conseiller en énergie »)
+**Catégorie** : Service aux entreprises
 **Nom d'utilisateur proposé** : @cercleenergie (à vérifier, selon disponibilité)
 
 ## Bio (101 caractères maximum)
-Le réseau qui accompagne les artisans RGE : dossiers CEE, formation, qualification, fournisseurs.
+Mandataire CEE. Le partenaire des installateurs, du premier contact au versement de la prime.
 
 ## À propos (description longue)
-Cercle Énergie est un réseau d'accompagnement pour les artisans RGE.
+Cercle Énergie, le partenaire unique de vos projets.
 
-Mandataire CEE, nous faisons le lien entre les artisans et les délégataires qui financent les primes. Et nous aidons les artisans sur ce qu'ils n'arrivent pas à faire seuls :
+Mandataire CEE (Certificats d'Économies d'Énergie) de la 6e période, nous accompagnons les artisans chauffagistes, les entreprises de génie climatique et les spécialistes de l'isolation : pompes à chaleur, chauffe-eau thermodynamiques, isolation.
 
-• Dossiers CEE et primes : éligibilité, montage, vérification, suivi
-• Démarches administratives
-• Formation au fonctionnement des CEE
-• Accompagnement à la qualification RGE
-• Tarifs préférentiels auprès de fournisseurs partenaires
+Vous installez. Nous vous accompagnons à chaque étape :
+• qualification du projet et visite technique
+• choix des équipements
+• devis et financement
+• chantier et justificatifs
+• montage et suivi du dossier CEE, jusqu'au versement de la prime
 
-Vous faites des chantiers de qualité. Nous vous accompagnons sur le reste.
+Des dossiers suivis, des règles expliquées, un partenaire à vos côtés.
 
-Le versement des primes intervient sous réserve de validation du dossier.
+Le versement des primes intervient selon les conditions contractuelles et la validation des dossiers.
 
 ## Bouton d'action
-« En savoir plus » ou « S'inscrire » → https://cercle-energie.vercel.app/devenir-partenaire
+« En savoir plus » → https://cercle-energie.vercel.app/devenir-partenaire
 (à remplacer par le nom de domaine définitif quand il sera connecté)
 
 ## Coordonnées à renseigner par le client
 Téléphone · E-mail · Adresse · Horaires · Site web
 
 ## Premier post à épingler
-Artisan RGE ? Vous n'êtes plus seul.
+Vous installez. Nous vous accompagnons à chaque étape.
 
-Vos chantiers sont soignés. Mais les dossiers de primes, les démarches, la qualification RGE, les prix du matériel : seul, tout cela prend vos soirées.
+Conseiller, dimensionner, installer, satisfaire vos clients : c'est votre métier. Comparer des offres, décrypter les règles des aides, relancer des dossiers : cela ne devrait pas vous prendre vos soirées.
 
-Cercle Énergie est un réseau d'accompagnement pour les artisans :
-✅ Vos dossiers CEE montés et suivis
-✅ Un appui sur vos démarches administratives
-✅ Une formation au fonctionnement des primes
-✅ Un accompagnement à la qualification RGE
-✅ Des tarifs préférentiels auprès de fournisseurs partenaires
+Cercle Énergie, mandataire CEE, est à vos côtés du premier contact au versement de la prime :
+✅ Des dossiers préparés, contrôlés et suivis
+✅ Des règles expliquées simplement
+✅ Un interlocuteur identifié
+✅ Un accès simplifié à des équipements de qualité
 
-👉 Décrivez votre activité en 1 minute : https://cercle-energie.vercel.app/devenir-partenaire
+👉 Parlons de vos projets : https://cercle-energie.vercel.app/devenir-partenaire
 
-Versement des primes sous réserve de validation du dossier.
+Versement des primes selon les conditions contractuelles et la validation des dossiers.
 
-Visuel conseillé : `../visuels/R01-petit-artisan-pas-isole-portrait.jpg` ou la vidéo `../../cercle-energie-presentation-v2.mp4`.
+Visuel conseillé : `../visuels/C01-vous-installez-portrait.jpg` ou la vidéo de présentation.
 
 ## Images
 - `profil.png` : 1080 × 1080, logo centré (Facebook l'affiche en rond).

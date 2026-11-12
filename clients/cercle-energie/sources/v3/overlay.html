@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!-- Cercle Énergie — présentation V3 : calque des textes animés (1920×1080, 24 i/s, 70 s).
+     Rendu image par image par render.js via window.renderAt(t). Minutage calé sur vo_segs.json. -->
+<style>
+@font-face{font-family:M;font-weight:500;src:url(assets/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(assets/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(assets/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(assets/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:600;font-style:italic;src:url(assets/montserrat-latin-600-italic.woff2)}
+@font-face{font-family:M;font-weight:700;font-style:italic;src:url(assets/montserrat-latin-700-italic.woff2)}
+:root{--navy:#0B3566;--green:#73AF01;--blue:#016CB4;--teal:#01B7BA;--ink:#0B2545}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:M,sans-serif;color:#fff}
+.abs{position:absolute}
+.full{position:absolute;left:0;top:0;width:1920px;height:1080px}
+[data-in]{opacity:0;will-change:transform,opacity}
+svg{display:block}
+
+/* logo bug */
+.bug{right:56px;top:48px;background:#fff;border-radius:22px;padding:12px 22px 10px;box-shadow:0 10px 30px rgba(6,24,52,.28)}
+.bug img{width:176px;display:block}
+
+/* bottom gradient */
+.grad{left:0;bottom:0;width:1920px;height:560px;background:linear-gradient(to top,rgba(5,22,48,.88) 0%,rgba(5,22,48,.58) 45%,rgba(5,22,48,0) 100%)}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:18px;background:#fff;color:var(--navy);font-weight:700;font-size:46px;line-height:1;padding:20px 36px 20px 22px;border-radius:999px;box-shadow:0 12px 34px rgba(6,24,52,.3)}
+.chip i{width:46px;height:46px;border-radius:50%;background:var(--navy);flex:none;display:flex;align-items:center;justify-content:center}
+.chip i svg{width:24px;height:24px;stroke:#fff;stroke-width:3.4;stroke-linecap:round;fill:none}
+
+/* lower third */
+.lt{left:110px;bottom:96px;width:1600px}
+.lt .k{font-weight:700;font-size:34px;letter-spacing:.16em;text-transform:uppercase;color:#B9E35A;margin-bottom:18px}
+.lt .h{font-weight:800;font-size:78px;line-height:1.1;letter-spacing:-.01em;text-shadow:0 4px 26px rgba(0,0,0,.4)}
+.lt .h em{font-style:normal;color:#B9E35A}
+.lt .sub{font-weight:600;font-size:34px;margin-bottom:22px;text-shadow:0 3px 18px rgba(0,0,0,.5)}
+.lt .sw{position:relative;height:90px}
+.lt .sw .h{position:absolute;left:0;top:0;white-space:nowrap}
+.bar{width:120px;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--green),var(--teal));margin-bottom:26px}
+
+/* white stages */
+.stage{background:#fff;overflow:hidden;visibility:hidden}
+.arc{border-radius:50%;position:absolute}
+.cap{position:absolute;left:0;width:1920px;text-align:center;color:var(--navy);font-weight:700}
+
+/* le cercle et ses huit étapes */
+#ringTxt{position:absolute;left:1010px;top:330px;width:860px;color:var(--navy)}
+#ringTxt .k{font-weight:700;font-size:32px;letter-spacing:.16em;text-transform:uppercase;color:#4E8A06;margin-bottom:20px}
+#ringTxt .h1{font-weight:800;font-size:96px;line-height:1.06;letter-spacing:-.01em}
+#ringTxt .h2{font-weight:700;font-size:58px;line-height:1.15;color:#4E8A06;margin-top:26px}
+#ringMid{position:absolute;left:230px;top:398px;width:600px;text-align:center;color:var(--navy)}
+#ringMid b{display:block;font-weight:800;font-size:190px;line-height:.95}
+#ringMid span{display:block;font-weight:700;font-size:52px;color:#4E8A06}
+
+/* étapes */
+.vol{left:96px;bottom:92px;display:inline-flex;align-items:center;gap:34px;background:#fff;color:var(--navy);border-radius:34px;padding:26px 56px 26px 30px;box-shadow:0 14px 40px rgba(6,24,52,.36)}
+.vol .rg{width:156px;height:156px;flex:none;position:relative}
+.vol .rg svg{width:156px;height:156px}
+.vol .rg b{position:absolute;left:0;top:0;width:156px;height:156px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:54px;color:var(--navy)}
+.vol .n{font-weight:700;font-size:30px;letter-spacing:.14em;color:#4E8A06;text-transform:uppercase}
+.vol .a{font-weight:800;font-size:62px;line-height:1.1;margin-top:6px;white-space:nowrap}
+.vol .a2{font-weight:800;font-size:54px;line-height:1.16;margin-top:6px;white-space:nowrap}
+.vol .a2 i{font-style:normal;color:var(--green);margin-right:18px}
+.vol .s{font-weight:600;font-size:34px;line-height:1.25;margin-top:12px;color:#2F4668;white-space:nowrap}
+
+/* accroches et piliers */
+.lt .h span[data-in]{display:inline-block}
+.lt.m .h{font-size:70px}
+#pil{left:96px;top:56px;display:flex;gap:16px}
+.pl{display:flex;align-items:center;gap:14px;font-weight:700;font-size:36px;line-height:1;padding:19px 30px 19px 24px;border-radius:999px;box-shadow:0 10px 30px rgba(6,24,52,.3)}
+.pl u{display:block;width:18px;height:18px;border-radius:50%}
+.ckick{font-weight:700;font-size:34px;letter-spacing:.14em;text-transform:uppercase;color:#B9E35A;text-shadow:0 3px 18px rgba(0,0,0,.5);margin-bottom:6px}
+
+/* end card */
+#tag{left:0;top:566px;width:1920px;display:flex;align-items:center;justify-content:center;gap:26px;font-weight:600;font-style:italic;font-size:50px;color:var(--navy)}
+#tag u{display:block;width:74px;height:4px;border-radius:4px;background:var(--green)}
+.words{position:absolute;left:0;top:694px;width:1920px;display:flex;justify-content:center;gap:16px}
+.word{font-weight:700;font-size:38px;color:var(--navy);background:#F1F6FB;border-radius:999px;padding:18px 36px;white-space:nowrap}
+#cta{left:0;top:824px;width:1920px;text-align:center}
+#cta .btn{display:inline-flex;align-items:center;gap:22px;background:linear-gradient(90deg,var(--green),#4E8A06);color:#fff;font-weight:800;font-size:58px;padding:32px 68px;border-radius:999px;box-shadow:0 18px 44px rgba(78,154,10,.42)}
+#cta svg{width:48px;height:48px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<!-- dégradés bas -->
+<div class="abs grad" data-in="0.3" data-out="15.2" data-dy="0" data-din="0.6"></div>
+<div class="abs grad" data-in="17.6" data-out="21.9" data-dy="0" data-din="0.3"></div>
+<div class="abs grad" data-in="50.4" data-out="59.95" data-dy="0" data-din="0.4"></div>
+
+<!-- logo en coin -->
+<div class="abs bug" data-in="0.9" data-out="15.1" data-dy="-20"><img src="assets/logo_mark_t.png"></div>
+<div class="abs bug" data-in="18.0" data-out="21.75" data-dy="-20"><img src="assets/logo_mark_t.png"></div>
+<div class="abs bug" data-in="26.5" data-out="59.7" data-dy="-20"><img src="assets/logo_mark_t.png"></div>
+
+<!-- 1. ouverture : vous installez -->
+<div class="abs lt" data-in="0.9" data-out="5.75">
+  <div class="bar"></div>
+  <div class="k">Vous installez</div>
+  <div class="sw">
+    <div class="h" data-in="1.55" data-out="2.6" data-dout="0.15" data-dy="24">Pompes à chaleur</div>
+    <div class="h" data-in="2.78" data-out="4.1" data-dout="0.15" data-dy="24">Chauffe-eau thermodynamiques</div>
+    <div class="h" data-in="4.28" data-out="5.75" data-dy="24">Isolation</div>
+  </div>
+</div>
+
+<!-- 2. votre métier -->
+<div class="abs lt" data-in="6.4" data-out="10.45">
+  <div class="bar"></div>
+  <div class="k">Votre métier</div>
+  <div class="h"><span data-in="7.65" data-out="99" data-dy="24">Conseiller,</span> <span data-in="8.4" data-out="99" data-dy="24">installer,</span></div>
+  <div class="h" data-in="9.3" data-out="99" data-dy="24"><em>satisfaire vos clients.</em></div>
+</div>
+
+<!-- 3. ce qui n'est pas votre métier -->
+<div class="abs" style="left:110px;bottom:96px;display:flex;flex-direction:column;align-items:flex-start;gap:20px">
+  <div class="ckick" data-in="11.15" data-out="15.2" data-dx="-50" data-dy="0">Pas votre métier</div>
+  <div class="chip" data-in="11.45" data-out="15.2" data-dx="-50" data-dy="0"><i><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></i>Comparer des offres</div>
+  <div class="chip" data-in="12.55" data-out="15.25" data-dx="-50" data-dy="0"><i><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></i>Interpréter les règles des aides</div>
+  <div class="chip" data-in="14.25" data-out="15.3" data-dx="-50" data-dy="0"><i><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></i>Relancer des dossiers</div>
+</div>
+
+<!-- 4. logo -->
+<div class="full stage" id="stage1">
+  <div class="arc" style="left:-320px;top:-380px;width:900px;height:900px;border:70px solid rgba(115,175,1,.10)"></div>
+  <div class="arc" style="right:-380px;bottom:-460px;width:1100px;height:1100px;border:90px solid rgba(1,108,180,.08)"></div>
+  <div class="abs" id="bigLogo" style="left:460px;top:220px;width:1000px"><img src="assets/logo_full_t.png" style="width:1000px;display:block"></div>
+</div>
+
+<!-- 4 bis. titre -->
+<div class="abs lt" data-in="17.75" data-out="21.75">
+  <div class="bar"></div>
+  <div class="k">Mandataire CEE de la 6<sup style="font-size:.6em;text-transform:none;letter-spacing:0">e</sup> période</div>
+  <div class="sub" data-in="18.2" data-out="99" data-dy="16">CEE : Certificats d’Économies d’Énergie</div>
+  <div class="h" data-in="19.2" data-out="99" data-dy="24">Le partenaire unique</div>
+  <div class="h" data-in="20.3" data-out="99" data-dy="24"><em>de vos projets</em></div>
+</div>
+
+<!-- 5. le cercle et ses huit étapes -->
+<div class="full stage" id="stage2">
+  <div class="arc" style="right:-380px;top:-460px;width:1000px;height:1000px;border:80px solid rgba(1,108,180,.07)"></div>
+  <svg class="abs" id="bigRing" style="left:130px;top:140px" width="800" height="800" viewBox="0 0 800 800"></svg>
+  <div id="ringMid" data-in="24.4" data-out="26.45" data-dout="0.01" data-dy="0" data-s="0.8"><b>8</b><span>étapes</span></div>
+  <div id="ringTxt">
+    <div class="k" data-in="22.7" data-out="26.45" data-dout="0.01" data-dy="16">Cercle Énergie</div>
+    <div class="h1" data-in="22.85" data-out="26.45" data-dout="0.01" data-dy="26">Un cercle<br>de confiance</div>
+    <div class="h2" data-in="24.35" data-out="26.45" data-dout="0.01" data-dy="22">présent à chaque étape</div>
+  </div>
+</div>
+
+<!-- 6. le parcours en huit étapes -->
+<div class="abs vol" data-step="1" data-in="26.4" data-out="29.55" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b id="n12">01</b></div><div><div class="n">Étapes 1 et 2 sur 8</div><div class="a2"><i>01</i>Opportunité</div><div class="a2" data-in="27.55" data-out="99" data-dy="18"><i>02</i>Qualification du projet</div></div></div>
+<div class="abs vol" data-step="3" data-in="30.0" data-out="32.65" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>03</b></div><div><div class="n">Étape 3 sur 8</div><div class="a">Visite technique</div></div></div>
+<div class="abs vol" data-step="4" data-in="33.1" data-out="35.75" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>04</b></div><div><div class="n">Étape 4 sur 8</div><div class="a">Choix des équipements</div></div></div>
+<div class="abs vol" data-step="5" data-in="36.2" data-out="39.05" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>05</b></div><div><div class="n">Étape 5 sur 8</div><div class="a">Devis et financement</div></div></div>
+<div class="abs vol" data-step="6" data-in="39.5" data-out="42.55" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>06</b></div><div><div class="n">Étape 6 sur 8</div><div class="a">Chantier et justificatifs</div></div></div>
+<div class="abs vol" data-step="7" data-in="43.0" data-out="46.25" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>07</b></div><div><div class="n">Étape 7 sur 8</div><div class="a">Montage et suivi CEE</div></div></div>
+<div class="abs vol" data-step="8" data-in="46.7" data-out="50.2" data-din="0.4" data-dout="0.14"><div class="rg"><svg viewBox="0 0 156 156"></svg><b>08</b></div><div><div class="n">Étape 8 sur 8</div><div class="a">Versement de la prime</div><div class="s" data-in="47.3" data-out="99" data-dy="10">Selon les conditions contractuelles et la validation des dossiers</div></div></div>
+
+<!-- 7. accroches et quatre piliers -->
+<div class="abs" id="pil" data-in="50.75" data-out="59.9" data-dx="-40" data-dy="0">
+  <div class="pl" data-t="51.1"><u></u>Simplicité</div>
+  <div class="pl" data-t="52.45"><u></u>Confiance</div>
+  <div class="pl" data-t="56.3"><u></u>Performance</div>
+  <div class="pl" data-t="58.3"><u></u>Proximité</div>
+</div>
+<div class="abs lt m" style="width:1700px" data-in="51.1" data-out="55.6">
+  <div class="bar"></div>
+  <div class="h">Des dossiers suivis,</div>
+  <div class="h" data-in="52.45" data-out="99" data-dy="24">des règles expliquées,</div>
+  <div class="h" data-in="53.85" data-out="99" data-dy="24"><em>un partenaire à vos côtés.</em></div>
+</div>
+<div class="abs lt m" style="width:1700px" data-in="56.3" data-out="59.85">
+  <div class="bar"></div>
+  <div class="h">Moins de temps dans l’administratif,</div>
+  <div class="h" data-in="58.3" data-out="99" data-dy="24"><em>plus de temps sur vos chantiers.</em></div>
+</div>
+
+<!-- 8. carton final -->
+<div class="full stage" id="stage3">
+  <div class="arc" style="left:-360px;bottom:-420px;width:1000px;height:1000px;border:80px solid rgba(1,108,180,.08)"></div>
+  <div class="arc" style="right:-300px;top:-380px;width:900px;height:900px;border:70px solid rgba(115,175,1,.10)"></div>
+  <div class="abs" id="endLogo" style="left:650px;top:96px;width:620px"><img src="assets/logo_mark_t.png" style="width:620px;display:block"></div>
+  <div class="abs" id="tag" data-in="62.5" data-out="99" data-dy="20"><u></u>Le partenaire unique de vos projets<u></u></div>
+  <div class="words">
+    <div class="word" data-in="63.7" data-out="99" data-dy="22" data-s="0.92">Mandataire CEE de la 6<sup style="font-size:.6em">e</sup> période</div>
+  </div>
+  <div class="abs" id="cta" data-in="65.4" data-out="99" data-dy="30" data-s="0.92"><span class="btn" id="ctaBtn">Parlons de vos projets<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+</div>
+
+<!-- fondu d'ouverture -->
+<div class="full" id="fadeIn" style="background:#fff"></div>
+
+<script>
+const c01=x=>Math.max(0,Math.min(1,x));
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const P=(t,t0,d)=>c01((t-t0)/d);
+const items=[...document.querySelectorAll('[data-in]')].map(el=>({el,
+  tin:+el.dataset.in,tout:+el.dataset.out,din:+(el.dataset.din||.45),dout:+(el.dataset.dout||.3),
+  dx:+(el.dataset.dx||0),dy:el.dataset.dy!==undefined?+el.dataset.dy:34,s:+(el.dataset.s||1)}));
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+// couleur du segment i (0..7) : bleu -> turquoise -> vert
+const STOPS=[[1,108,180],[1,183,186],[115,175,1]];
+function segCol(i){const x=i/7*2,k=Math.min(1,Math.floor(x)),f=x-k,a=STOPS[k],b=STOPS[k+1];return `rgb(${a.map((v,j)=>Math.round(v+(b[j]-v)*f)).join(',')})`}
+// anneau de 8 segments (départ en haut, sens horaire)
+function buildRing(svg,cx,cy,r,w,gapDeg){
+  const segs=[];
+  for(let i=0;i<8;i++){
+    const a0=(-90+i*45+gapDeg/2)*Math.PI/180,a1=(-90+(i+1)*45-gapDeg/2)*Math.PI/180;
+    const d=`M${cx+r*Math.cos(a0)} ${cy+r*Math.sin(a0)} A${r} ${r} 0 0 1 ${cx+r*Math.cos(a1)} ${cy+r*Math.sin(a1)}`;
+    const bg=document.createElementNS(NS,'path');bg.setAttribute('d',d);bg.setAttribute('fill','none');bg.setAttribute('stroke','#DCE6F1');bg.setAttribute('stroke-width',w);bg.setAttribute('stroke-linecap','round');svg.appendChild(bg);
+    const fg=bg.cloneNode();fg.setAttribute('stroke',segCol(i));fg.setAttribute('pathLength','1');fg.setAttribute('stroke-dasharray','1 1');fg.setAttribute('stroke-dashoffset','1');svg.appendChild(fg);
+    segs.push(fg);
+  }
+  return segs;
+}
+const setSeg=(fg,p)=>{fg.setAttribute('stroke-dashoffset',1-p);fg.setAttribute('stroke-opacity',p<=0?0:1)};
+const big=buildRing($('bigRing'),400,400,330,46,7);
+const steps=[...document.querySelectorAll('.vol')].map(el=>({el,n:+el.dataset.step,tin:+el.dataset.in,segs:buildRing(el.querySelector('svg'),78,78,64,15,13)}));
+const pills=[...document.querySelectorAll('.pl')].map(el=>({el,t:+el.dataset.t,dot:el.querySelector('u')}));
+function circle(el,t,tIn,dIn,tOut,dOut){ // ouverture en cercle, sortie en fondu
+  const a=eio(P(t,tIn,dIn)); const o=1-P(t,tOut,dOut);
+  if(a<=0||o<=0){el.style.visibility='hidden';return 0}
+  el.style.visibility='visible';el.style.clipPath=a>=1?'none':`circle(${a*1130}px at 960px 540px)`;el.style.opacity=o;return a;
+}
+window.renderAt=function(t){
+  for(const it of items){
+    const a=eo(P(t,it.tin,it.din)), b=P(t,it.tout,it.dout);
+    const el=it.el;
+    if(a<=0||b>=1){el.style.opacity=0;el.style.visibility='hidden';continue}
+    el.style.visibility='visible';
+    el.style.opacity=a*(1-b);
+    const sc=it.s+(1-it.s)*a;
+    el.style.transform=`translate(${it.dx*(1-a)}px,${it.dy*(1-a)-10*b}px) scale(${sc})`;
+  }
+  $('fadeIn').style.opacity=1-P(t,0.05,0.7);
+  $('fadeIn').style.visibility=t>0.8?'hidden':'visible';
+
+  // logo
+  circle($('stage1'),t,15.1,0.5,17.6,0.4);
+  const bl=$('bigLogo');const a=eo(P(t,15.35,0.6));
+  bl.style.opacity=a;bl.style.transform=`scale(${0.88+0.12*a+0.03*P(t,15.35,2.3)})`;
+
+  // le cercle : les huit segments se tracent l'un après l'autre
+  circle($('stage2'),t,21.8,0.5,26.1,0.35);
+  big.forEach((fg,i)=>setSeg(fg,eio(P(t,22.95+i*0.3,0.34))));
+
+  // étapes : l'anneau de chaque carte est rempli jusqu'à l'étape en cours
+  for(const s of steps){
+    s.segs.forEach((fg,i)=>{
+      let p=i<s.n-1?1:(i===s.n-1?eo(P(t,s.tin+0.2,0.45)):0);
+      if(s.n===1&&i===1)p=eo(P(t,27.55,0.45)); // carte double : l'étape 02 arrive avec « qualification »
+      setSeg(fg,p);
+    });
+  }
+  $('n12').textContent=t<27.7?'01':'02';
+
+  // piliers : chaque pastille s'allume à son tour
+  for(const p of pills){
+    const k=eo(P(t,p.t,0.4));
+    p.el.style.background=`rgba(${Math.round(11+244*k)},${Math.round(53+202*k)},${Math.round(102+153*k)},${0.62+0.38*k})`;
+    p.el.style.color=k>0.5?'#0B3566':'rgba(255,255,255,.82)';
+    p.dot.style.background=k>0.5?'#73AF01':'rgba(255,255,255,.45)';
+    p.el.style.transform=`scale(${1+0.06*Math.sin(P(t,p.t,0.5)*Math.PI)})`;
+  }
+
+  // carton final
+  circle($('stage3'),t,59.6,0.55,999,1);
+  const el=$('endLogo');const ea=eo(P(t,59.9,0.8));
+  el.style.opacity=ea;el.style.transform=`scale(${0.88+0.12*ea+0.02*P(t,59.9,10)})`;
+  const pu=1+0.025*Math.sin(Math.max(0,t-66.3)*4.2)*(t>66.3?1:0);
+  $('ctaBtn').style.transform=`scale(${pu})`;
+};
+window.ready=document.fonts.ready.then(()=>Promise.all([...document.images].map(i=>i.decode())));
+</script>
+</body>
+</html>
