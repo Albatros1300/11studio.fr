@@ -81,8 +81,11 @@ def rounded(im,r):
     return np.dstack([im,m])
 
 V4=os.environ.get('V4SCR')   # dossier des images réelles traitées
-R1=Seq(f"{V4}/bl1234",'png',0,49); R2=Seq(f"{V4}/bl1232a",'png',36,107)
-R3=Seq(f"{V4}/bl1232b",'png',150,259); R4=Seq(f"{V4}/bl1242",'png',40,144)
+# bornes = images vérifiées une à une (au-delà : image figée pendant le fondu)
+R1=Seq(f"{V4}/bl1234",'png',0,44)      # au-delà de 44, des lettres rouges de l'écran d'origine apparaissent derrière la plante
+R2=Seq(f"{V4}/bl1232a",'png',36,107)
+R3=Seq(f"{V4}/bl1232b",'png',166,236); R3bg=Seq(f"{V4}/bl1232b",'png',150,259)
+R4=Seq(f"{V4}/bl1242",'png',44,140)    # le salut à la caméra commence vers 142
 
 # ---------- plans : (début, durée, fonction(k, n) -> image BGR)
 shots=[]
@@ -90,16 +93,16 @@ def shot(t0,d):
     def deco(fn): shots.append((t0,d,fn)); return fn
     return deco
 src=lambda seq,start: (lambda k,n: vignette(grade_real(seq.get(start+k))))
-shots.append((0.00,1.92,src(R1,0)))
-shots.append((1.92,2.68,src(R2,41)))
-shots.append((4.60,3.24,src(R3,168)))
-shots.append((7.84,3.40,src(R4,50)))
+shots.append((0.00,1.80,src(R1,0)))
+shots.append((1.80,2.80,src(R2,38)))
+shots.append((4.60,2.80,src(R3,166)))
+shots.append((7.40,3.84,src(R4,44)))
 
 PC=cv2.imread(os.path.join(INS,'pc_analyse.png'))
 @shot(11.24,5.00)
 def pc_shot(k,n):
     # fond : le plateau réel (déjà flouté) très flou et assombri ; fenêtre du logiciel qui monte puis zoom lent
-    bg=grade_real(R3.get(170+int(k*0.75)))
+    bg=grade_real(R3bg.get(170+int(k*0.75)))
     bg=cv2.GaussianBlur(cv2.resize(bg,(480,270),interpolation=cv2.INTER_AREA),(0,0),5)
     bg=cv2.resize(bg,(OW,OH),interpolation=cv2.INTER_CUBIC).astype(np.float32)
     bg=bg*0.42+np.array([75,38,7],np.float32)*0.58*0.55
@@ -126,7 +129,7 @@ def visite(k,n):
     paste(im,CARTE,x,y,alpha=min(1,u*1.5),shadow=True)
     return vignette(im)
 
-PH=[load_rgba('qualif_photos.png',800),load_rgba('visite_scan.png',800),load_rgba('equipements.png',800)]
+PH=[load_rgba('qualif_photos.png',960),load_rgba('visite_scan.png',960),load_rgba('equipements.png',960)]
 DEVIS=Clip(f"{PL}/v3-devis.mp4")
 @shot(21.04,5.40)
 def trio(k,n):
@@ -135,10 +138,10 @@ def trio(k,n):
     im=np.clip(bg,0,255).astype(np.uint8)
     t=k/FPS
     # téléphones : bilan (0,8 s), visite technique (1,2 s), devis/équipements (2,1 s) — calés sur la voix
-    for i,(t0,cx) in enumerate(((0.80,560),(1.20,960),(2.10,1360))):
+    for i,(t0,cx) in enumerate(((0.80,450),(1.20,960),(2.10,1470))):
         u=eout((t-t0)/0.75)
         if u<=0: continue
-        p=PH[i]; x=cx-p.shape[1]/2; y=(OH-p.shape[0])/2+20+(1-u)*260
+        p=PH[i]; x=cx-p.shape[1]/2; y=196+(1-u)*320   # bas des téléphones hors champ
         paste(im,p,x,y,alpha=min(1,u*1.6))
     return vignette(im)
 
