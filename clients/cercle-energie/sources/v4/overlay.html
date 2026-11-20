@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!-- Cercle Énergie — présentation V4 : calque des textes (1920×1080, 25 i/s, 50,5 s), rendu image par image
+     par render.js via window.renderAt(t). Peu de texte : un sous-titre discret par plan + carton final.
+     Minutage calé sur vo_segs.json. -->
+<style>
+@font-face{font-family:M;font-weight:500;src:url(assets/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(assets/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(assets/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(assets/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:600;font-style:italic;src:url(assets/montserrat-latin-600-italic.woff2)}
+:root{--navy:#0B3566;--night:#07264B;--green:#73AF01;--lime:#B9E35A;--teal:#01B7BA}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:M,sans-serif;color:#fff}
+.abs{position:absolute}
+[data-in]{opacity:0;visibility:hidden;will-change:transform,opacity}
+.grad{left:0;bottom:0;width:1920px;height:380px;background:linear-gradient(to top,rgba(5,22,48,.62) 0%,rgba(5,22,48,.30) 50%,rgba(5,22,48,0) 100%)}
+.bug{right:52px;top:44px;background:#fff;border-radius:20px;padding:10px 18px 8px;box-shadow:0 8px 26px rgba(6,24,52,.25)}
+.bug img{width:132px;display:block}
+.st{left:104px;bottom:70px;white-space:nowrap}
+.st .bar{width:84px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--teal));margin-bottom:16px}
+.st .t{font-weight:700;font-size:50px;letter-spacing:-.005em;text-shadow:0 3px 18px rgba(0,0,0,.45)}
+.st .t i{font-style:normal;color:var(--lime);padding:0 .28em}
+.st .m{font-weight:600;font-style:italic;font-size:25px;margin-top:12px;color:rgba(255,255,255,.92);text-shadow:0 2px 12px rgba(0,0,0,.55)}
+/* carton final */
+#card{left:410px;top:150px;width:1100px;height:780px;background:#fff;border-radius:36px;box-shadow:0 30px 80px rgba(0,0,0,.35);color:var(--navy);text-align:center}
+#card img{position:absolute;left:330px;top:58px;width:440px}
+#tag{position:absolute;left:0;top:384px;width:1100px;display:flex;align-items:center;justify-content:center;gap:22px;font-weight:600;font-style:italic;font-size:44px}
+#tag u{display:block;width:60px;height:4px;border-radius:4px;background:var(--green)}
+#mand{position:absolute;left:0;top:462px;width:1100px;font-weight:600;font-size:27px;letter-spacing:.14em;text-transform:uppercase;color:#4E8A06}
+#cta{position:absolute;left:0;top:536px;width:1100px}
+#cta .btn{display:inline-flex;align-items:center;gap:20px;background:linear-gradient(90deg,var(--green),#4E8A06);color:#fff;font-weight:800;font-size:50px;padding:26px 58px;border-radius:999px;box-shadow:0 14px 36px rgba(78,154,10,.38)}
+#cta svg{width:42px;height:42px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#contact{position:absolute;left:0;top:684px;width:1100px;font-weight:600;font-size:32px;color:var(--navy)}
+#contact b{color:var(--green);font-weight:800;padding:0 .5em}
+#black{left:0;top:0;width:1920px;height:1080px;background:#000}
+</style>
+</head>
+<body>
+<div class="abs grad" data-in="1.9" data-out="38.9" data-din="0.5" data-dout="0.4" data-dy="0"></div>
+<div class="abs bug" data-in="0.6" data-out="38.85" data-dy="-16"><img src="assets/logo_mark_t.png"></div>
+
+<div class="abs st" data-in="2.35" data-out="4.35"><div class="bar"></div><div class="t">Mandataire CEE<i>·</i>6<sup style="font-size:.6em">e</sup> période</div></div>
+<div class="abs st" data-in="5.25" data-out="7.6"><div class="bar"></div><div class="t">Paris<i>·</i>Nîmes<i>·</i>Cannes</div></div>
+<div class="abs st" data-in="8.65" data-out="11.0"><div class="bar"></div><div class="t">Une équipe dédiée</div></div>
+<div class="abs st" data-in="11.9" data-out="15.95"><div class="bar"></div><div class="t">Suivi des dossiers</div></div>
+<div class="abs st" data-in="16.75" data-out="20.75"><div class="bar"></div><div class="t">Application mobile</div></div>
+<div class="abs st" data-in="21.9" data-out="26.1"><div class="bar"></div><div class="t">Bilan<i>·</i>Visite technique<i>·</i>Devis</div></div>
+<div class="abs st" data-in="27.25" data-out="31.95"><div class="bar"></div><div class="t">Un seul parcours</div>
+  <div class="m" data-in="28.5" data-out="99" data-dy="10">Selon les conditions contractuelles et la validation des dossiers</div></div>
+<div class="abs st" data-in="32.7" data-out="34.95"><div class="bar"></div><div class="t">Vous installez</div></div>
+<div class="abs st" data-in="35.55" data-out="38.8"><div class="bar"></div><div class="t">Nous vous accompagnons</div></div>
+
+<div class="abs" id="card" data-in="39.35" data-out="99" data-din="0.7" data-dy="40" data-s="0.94">
+  <img src="assets/logo_mark_t.png">
+  <div id="tag" data-in="41.7" data-out="99" data-dy="18"><u></u>Le partenaire unique de vos projets<u></u></div>
+  <div id="mand" data-in="42.4" data-out="99" data-dy="14">Mandataire CEE de la 6<sup style="font-size:.62em;letter-spacing:0">e</sup> période</div>
+  <div id="cta" data-in="44.1" data-out="99" data-dy="24" data-s="0.92"><span class="btn" id="ctaBtn">Parlons de vos projets<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  <div id="contact" data-in="44.8" data-out="99" data-dy="14">contact@cercleenergie.com<b>·</b>cercleenergie.fr</div>
+</div>
+<div class="abs" id="black" style="opacity:1"></div>
+
+<script>
+const c01=x=>Math.max(0,Math.min(1,x));
+const eo=x=>1-Math.pow(1-x,3);
+const P=(t,t0,d)=>c01((t-t0)/d);
+const items=[...document.querySelectorAll('[data-in]')].map(el=>({el,
+  tin:+el.dataset.in,tout:+el.dataset.out,din:+(el.dataset.din||.45),dout:+(el.dataset.dout||.35),
+  dx:+(el.dataset.dx||0),dy:el.dataset.dy!==undefined?+el.dataset.dy:22,s:+(el.dataset.s||1)}));
+window.renderAt=function(t){
+  for(const it of items){
+    const a=eo(P(t,it.tin,it.din)), b=P(t,it.tout,it.dout), el=it.el;
+    if(a<=0||b>=1){el.style.opacity=0;el.style.visibility='hidden';continue}
+    el.style.visibility='visible'; el.style.opacity=a*(1-b);
+    el.style.transform=`translate(${it.dx*(1-a)}px,${it.dy*(1-a)-8*b}px) scale(${it.s+(1-it.s)*a})`;
+  }
+  // ouverture depuis le noir, fermeture au noir
+  const bk=document.getElementById('black');
+  bk.style.opacity=Math.max(1-P(t,0,0.6),P(t,49.7,0.8));
+  const pu=t>45.2?1+0.02*Math.sin((t-45.2)*4):1;
+  document.getElementById('ctaBtn').style.transform=`scale(${pu})`;
+};
+window.ready=document.fonts.ready.then(()=>Promise.all([...document.images].map(i=>i.decode())));
+</script>
+</body>
+</html>
